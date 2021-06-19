@@ -56,7 +56,7 @@ class Student(models.Model):
         (LEVEL3, 'Level 3'),
     ]
     level = models.CharField(max_length=3, choices=LEVEL_CHOICES, default=LEVEL1)
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.user.first_name} {self.user.last_name}"

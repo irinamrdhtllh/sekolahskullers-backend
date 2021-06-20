@@ -58,13 +58,52 @@ class Student(models.Model):
     level = models.CharField(max_length=3, choices=LEVEL_CHOICES, default=LEVEL1)
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
 
+    levels = [LEVEL1, LEVEL2, LEVEL3]
+    milestones = [0, 1000, 2000, 3000]
+
     def __str__(self):
-        return f"{self.user.username} - {self.user.first_name} {self.user.last_name}"
+        return f"{self.user.get_username()} - {self.user.get_full_name()}"
+
+    def update_level(self):
+        """
+        Menentukan level berdasarkan batas nilai exp. Contoh: Jika exp berada di dalam
+        rentang 1000 <= exp < 2000 maka level menjadi Level 2.
+        """
+        for i in range(len(self.levels)):
+            if (
+                self.exp >= self.milestones[i]
+                and self.exp < self.milestones[i + 1]
+            ):
+                self.level = self.levels[i]
+
+    def relative_exp(self):
+        """
+        Menghitung nilai exp relatif (dalam persen) pada level saat ini.
+        Contoh: Jika saat ini Level 2 dan exp bernilai 1500 maka nilai exp relatif adalah 50%.
+        """
+        for i in range(len(self.levels)):
+            if self.level == self.levels[i]:
+                low = self.milestones[i]
+                high = self.milestones[i + 1]
+                return 100 * (self.exp - low) / (high - low)
+
+    def is_alive(self):
+        """
+        Mengecek jika Student masih hidup (memiliki health positif) atau tidak.
+        """
+        if self.health > 0:
+            return True
+        else:
+            return False
+
+    def save(self, *args, **kwargs):
+        self.update_level()
+        super().save(*args, **kwargs)
 
 
 class TaskYear(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    required = models.BooleanField()
+    is_required = models.BooleanField()
     deadline = models.DateTimeField()
     max_yield = models.IntegerField('maximum yield')
     year = models.ManyToManyField(Year)
@@ -75,7 +114,7 @@ class TaskYear(models.Model):
 
 class TaskGroup(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    required = models.BooleanField()
+    is_required = models.BooleanField()
     deadline = models.DateTimeField()
     max_yield = models.IntegerField('maximum yield')
     group = models.ManyToManyField(Group)
@@ -86,7 +125,7 @@ class TaskGroup(models.Model):
 
 class TaskStudent(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    required = models.BooleanField()
+    is_required = models.BooleanField()
     deadline = models.DateTimeField()
     max_yield = models.IntegerField('maximum yield')
     student = models.ManyToManyField(Student)

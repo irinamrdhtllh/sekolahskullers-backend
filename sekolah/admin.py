@@ -1,14 +1,35 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
 from .models import Student, Task, StudentTaskStatus
 
 
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'full_name', 'health', 'exp', 'level')
+class StudentInline(admin.StackedInline):
+    model = Student
+    can_delete = False
 
-    @admin.display(description='Name', ordering='user__first_name')
-    def full_name(self, student):
-        return student.user.get_full_name()
+
+class UserAdmin(BaseUserAdmin):
+    inlines = (StudentInline,)
+
+    list_display = ('username', 'full_name', 'health', 'exp', 'level')
+
+    @admin.display(description='Name', ordering='first_name')
+    def full_name(self, user):
+        return user.get_full_name()
+
+    @admin.display(description='Health')
+    def health(self, user):
+        return user.student.health
+
+    @admin.display(description='Experience')
+    def exp(self, user):
+        return user.student.exp
+
+    @admin.display(description='Level')
+    def level(self, user):
+        return user.student.level
 
 
 class TaskAdmin(admin.ModelAdmin):
@@ -27,6 +48,7 @@ class StudentTaskStatusAdmin(admin.ModelAdmin):
         return status.task.name
 
 
-admin.site.register(Student, StudentAdmin)
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(StudentTaskStatus, StudentTaskStatusAdmin)

@@ -2,46 +2,6 @@ from django.conf import settings
 from django.db import models
 
 
-class Year(models.Model):
-    name = models.CharField(max_length=25, unique=True)
-    health = models.IntegerField(default=100)
-    exp = models.IntegerField(default=0)
-
-    LEVEL1 = 'LV1'
-    LEVEL2 = 'LV2'
-    LEVEL3 = 'LV3'
-    LEVEL_CHOICES = [
-        (LEVEL1, 'Level 1'),
-        (LEVEL2, 'Level 2'),
-        (LEVEL3, 'Level 3'),
-    ]
-    level = models.CharField(max_length=3, choices=LEVEL_CHOICES, default=LEVEL1)
-    vision = models.TextField()
-    mission = models.TextField()
-
-    def __str__(self):
-        return self.name
-
-
-class Group(models.Model):
-    name = models.CharField(max_length=25, unique=True)
-    health = models.IntegerField(default=100)
-    exp = models.IntegerField(default=0)
-
-    LEVEL1 = 'LV1'
-    LEVEL2 = 'LV2'
-    LEVEL3 = 'LV3'
-    LEVEL_CHOICES = [
-        (LEVEL1, 'Level 1'),
-        (LEVEL2, 'Level 2'),
-        (LEVEL3, 'Level 3'),
-    ]
-    level = models.CharField(max_length=3, choices=LEVEL_CHOICES, default=LEVEL1)
-
-    def __str__(self):
-        return self.name
-
-
 class Student(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     health = models.IntegerField(default=100)
@@ -56,7 +16,6 @@ class Student(models.Model):
         (LEVEL3, 'Level 3'),
     ]
     level = models.CharField(max_length=3, choices=LEVEL_CHOICES, default=LEVEL1)
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
 
     levels = [LEVEL1, LEVEL2, LEVEL3]
     milestones = [0, 1000, 2000, 3000]
@@ -70,10 +29,7 @@ class Student(models.Model):
         rentang 1000 <= exp < 2000 maka level menjadi Level 2.
         """
         for i in range(len(self.levels)):
-            if (
-                self.exp >= self.milestones[i]
-                and self.exp < self.milestones[i + 1]
-            ):
+            if self.exp >= self.milestones[i] and self.exp < self.milestones[i + 1]:
                 self.level = self.levels[i]
 
     def relative_exp(self):
@@ -100,35 +56,38 @@ class Student(models.Model):
         self.update_level()
         super().save(*args, **kwargs)
 
+    def finish_task(self, name, score):
+        """
+        Menyelesaikan Task bernama name dan memberi skor sebesar score.
+        """
+        task = self.task_set.get(name=name)
+        status = StudentTaskStatus.objects.get(student=self, task=task)
+        status.is_finished = True
+        status.score = score
+        status.save()
 
-class TaskYear(models.Model):
+
+class Task(models.Model):
     name = models.CharField(max_length=50, unique=True)
     is_required = models.BooleanField()
-    deadline = models.DateTimeField()
-    max_yield = models.IntegerField('maximum yield')
-    year = models.ManyToManyField(Year)
+    deadline = models.DateTimeField('deadline date')
+    max_score = models.IntegerField(verbose_name='maximum score', default=100)
+    students = models.ManyToManyField(Student, through='StudentTaskStatus')
 
     def __str__(self):
         return self.name
 
-
-class TaskGroup(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    is_required = models.BooleanField()
-    deadline = models.DateTimeField()
-    max_yield = models.IntegerField('maximum yield')
-    group = models.ManyToManyField(Group)
-
-    def __str__(self):
-        return self.name
+    def assign(self, students):
+        """
+        Menambahkan Student ke Task yang diberikan.
+        """
+        self.save()
+        for student in students:
+            self.students.add(student)
 
 
-class TaskStudent(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    is_required = models.BooleanField()
-    deadline = models.DateTimeField()
-    max_yield = models.IntegerField('maximum yield')
-    student = models.ManyToManyField(Student)
-
-    def __str__(self):
-        return self.name
+class StudentTaskStatus(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    is_finished = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)

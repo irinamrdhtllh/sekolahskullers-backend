@@ -91,3 +91,7 @@ class StudentTaskStatus(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     is_finished = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'task status'
+        verbose_name_plural = 'task statuses'

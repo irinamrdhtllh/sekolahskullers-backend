@@ -9,7 +9,7 @@ from .models import Student
 
 
 def home(request):
-    return render(request, 'sekolah/home.html', context=None)
+    return render(request, 'home.html', context=None)
 
 
 def year(request):
@@ -30,7 +30,7 @@ def upload(request):
     dengan format header: `username`, `first_name`, `last_name`
     """
     if request.method == 'GET':
-        return render(request, 'sekolah/upload.html')
+        return render(request, 'upload.html')
 
     file = request.FILES['file']
     data = file.read().decode('UTF-8')

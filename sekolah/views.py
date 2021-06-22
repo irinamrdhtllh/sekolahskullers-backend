@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm
 from .models import Student
 
 
@@ -23,10 +23,11 @@ def group(request):
 
 
 def student(request):
-    pass
+    students = Student.objects.all()
+    return render(request, 'student.html', {'students': students})
 
 
-@staff_member_required(redirect_field_name='', login_url='home')
+@staff_member_required(login_url='login')
 def upload(request):
     """
     Menambahkan Student dari file CSV yang diupload
@@ -59,8 +60,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             Student.objects.create(user=user)
-
             return HttpResponseRedirect(reverse('home'))
     else:
         form = RegistrationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'registration/register.html', {'form': form})

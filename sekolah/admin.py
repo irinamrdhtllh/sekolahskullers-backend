@@ -19,11 +19,11 @@ class UserAdmin(BaseUserAdmin):
     def full_name(self, user):
         return user.get_full_name()
 
-    @admin.display(description='Health', ordering='student.health')
+    @admin.display(description='Health', ordering='student__health')
     def health(self, user):
         return user.student.health
 
-    @admin.display(description='Experience', ordering='student.exp')
+    @admin.display(description='Experience', ordering='student__exp')
     def exp(self, user):
         return user.student.exp
 

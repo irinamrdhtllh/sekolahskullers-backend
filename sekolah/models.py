@@ -65,6 +65,8 @@ class Student(models.Model):
         status.is_complete = True
         status.score = score
         status.save()
+        self.exp += int(score)
+        self.save()
 
 
 class Task(models.Model):

@@ -1,17 +1,18 @@
 import csv, io
 
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.contrib.auth.models import User, UserManager
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.urls import reverse
+from django.shortcuts import get_object_or_404, render
 
 from .forms import RegistrationForm
-from .models import Student
+from .models import Student, Task
 
 
 def home(request):
-    return render(request, 'home.html', context=None)
+    return render(request, 'home.html', {'user': request.user})
 
 
 def year(request):
@@ -28,10 +29,13 @@ def student(request):
 
 
 @staff_member_required(login_url='login')
-def upload(request):
+def upload(request, action):
     """
-    Menambahkan Student dari file CSV yang diupload
-    dengan format header: `username`, `first_name`, `last_name`
+    Menambahkan data dari file CSV yang diupload oleh admin. Terdapat tiga jenis
+    aksi dengan format header masing-masing sebagai berikut:
+    1. student (membuat Student baru): nim, nama depan, nama belakang
+    2. assign (menambahkan Student ke Task yang diberikan): nim, nama task
+    3. complete (menyelesaikan Task dan memberi skor): nim, nama task, skor
     """
     if request.method == 'GET':
         return render(request, 'upload.html')
@@ -42,11 +46,21 @@ def upload(request):
     next(io_string)
 
     for column in csv.reader(io_string):
-        user, created = User.objects.get_or_create(
-            username=column[0], first_name=column[1], last_name=column[2]
-        )
-        if created:
-            Student.objects.create(user=user)
+        if action == 'student':
+            user, created = User.objects.get_or_create(
+                username=column[0], first_name=column[1], last_name=column[2]
+            )
+            if created:
+                Student.objects.create(user=user)
+
+        elif action == 'assign':
+            user = get_object_or_404(User, username=column[0])
+            task = get_object_or_404(Task, name=column[1])
+            task.assign(user.student)
+
+        elif action == 'complete':
+            user = get_object_or_404(User, username=column[0])
+            user.student.complete_task(column[1], column[2])
 
     return HttpResponseRedirect(reverse('home'))
 
@@ -60,6 +74,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             Student.objects.create(user=user)
+            login(request, user)
             return HttpResponseRedirect(reverse('home'))
     else:
         form = RegistrationForm()

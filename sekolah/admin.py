@@ -19,11 +19,11 @@ class UserAdmin(BaseUserAdmin):
     def full_name(self, user):
         return user.get_full_name()
 
-    @admin.display(description='Health')
+    @admin.display(description='Health', ordering='student.health')
     def health(self, user):
         return user.student.health
 
-    @admin.display(description='Experience')
+    @admin.display(description='Experience', ordering='student.exp')
     def exp(self, user):
         return user.student.exp
 
@@ -37,7 +37,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 class StudentTaskStatusAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'task_name', 'is_finished', 'score')
+    list_display = ('full_name', 'task_name', 'is_complete', 'score')
 
     @admin.display(description='Name', ordering='student__user__first_name')
     def full_name(self, status):

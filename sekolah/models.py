@@ -56,13 +56,13 @@ class Student(models.Model):
         self.update_level()
         super().save(*args, **kwargs)
 
-    def finish_task(self, name, score):
+    def complete_task(self, name, score):
         """
         Menyelesaikan Task bernama name dan memberi skor sebesar score.
         """
         task = self.task_set.get(name=name)
         status = StudentTaskStatus.objects.get(student=self, task=task)
-        status.is_finished = True
+        status.is_complete = True
         status.score = score
         status.save()
 
@@ -77,19 +77,19 @@ class Task(models.Model):
     def __str__(self):
         return self.name
 
-    def assign(self, students):
+    def assign(self, student):
         """
         Menambahkan Student ke Task yang diberikan.
         """
         self.save()
-        for student in students:
-            self.students.add(student)
+        self.students.add(student)
+        StudentTaskStatus.objects.get_or_create(student=student, task=self)
 
 
 class StudentTaskStatus(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    is_finished = models.BooleanField(default=False)
+    is_complete = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
 
     class Meta:

@@ -18,7 +18,7 @@ class StudentModelTests(TestCase):
 
         self.assertAlmostEqual(student.relative_exp(), 50.0)
 
-    def test_finish_task(self):
+    def test_complete_task(self):
         user = User.objects.create()
         student = Student.objects.create(user=user)
 
@@ -28,10 +28,10 @@ class StudentModelTests(TestCase):
         StudentTaskStatus.objects.create(student=student, task=task)
 
         task.students.add(student)
-        student.finish_task('task', 90)
+        student.complete_task('task', 90)
 
-        self.assertEqual(student.studenttaskstatus_set.get(task=task).score, 90)
-        self.assertEqual(student.studenttaskstatus_set.get(task=task).is_finished, True)
+        self.assertEqual(student.studenttaskstatus_set.get(task__name='task').score, 90)
+        self.assertEqual(student.studenttaskstatus_set.get(task__name='task').is_complete, True)
 
 
 class TaskModelTests(TestCase):
@@ -42,6 +42,6 @@ class TaskModelTests(TestCase):
         task = Task.objects.create(
             name='task', is_required=True, deadline=timezone.now()
         )
-        task.assign([student])
+        task.assign(student)
 
         self.assertEqual(student.task_set.get(name='task'), task)

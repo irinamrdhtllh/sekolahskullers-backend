@@ -12,5 +12,5 @@ urlpatterns = [
     path('year/', views.year, name='year'),
     path('group/', views.group, name='group'),
     path('student/', views.student, name='student'),
-    path('upload/', views.upload),
+    path('upload/<action>/', views.upload),
 ]

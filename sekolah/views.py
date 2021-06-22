@@ -64,3 +64,10 @@ def register(request):
     else:
         form = RegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+def profile(request):
+    if request.user.is_authenticated:
+        return render(request, 'profile.html', {'student': request.user.student})
+    else:
+        return HttpResponseRedirect(reverse('login'))

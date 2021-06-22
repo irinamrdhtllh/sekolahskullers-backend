@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil{% endblock title %}
+
+{% block content %}
+<p>{{ student.user.username }} - {{ student.user.get_full_name }}</p>
+<p>{{ student.get_level_display }} - HP : {{ student.health }} - XP : {{ student.exp }}</p>
+<ul>
+  {% for status in student.studenttaskstatus_set.all %}
+    <li>
+      <p>{{ status.task.name }} - {{ status.task.is_required }} - {{ status.task.deadline }} - {{ status.task.max_score }} - {{ status.score }} - {{ status.is_finished }}</p>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock content %}

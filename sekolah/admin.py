@@ -1,54 +1,55 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
 
-from .models import Student, Task, StudentTaskStatus
+from .models import Student, Task, TaskStatus
 
 
-class StudentInline(admin.StackedInline):
-    model = Student
-    can_delete = False
-
-
-class UserAdmin(BaseUserAdmin):
-    inlines = (StudentInline,)
-
+class StudentAdmin(admin.ModelAdmin):
+    ordering = ('user__username',)
     list_display = ('username', 'full_name', 'health', 'exp', 'level')
 
-    @admin.display(description='Name', ordering='first_name')
-    def full_name(self, user):
-        return user.get_full_name()
+    @admin.display(ordering='user__username')
+    def username(self, student):
+        return student.user.get_username()
 
-    @admin.display(description='Health', ordering='student__health')
-    def health(self, user):
-        return user.student.health
+    @admin.display(ordering='user__first_name')
+    def full_name(self, student):
+        return student.user.get_full_name()
 
-    @admin.display(description='Experience', ordering='student__exp')
-    def exp(self, user):
-        return user.student.exp
-
-    @admin.display(description='Level')
-    def level(self, user):
-        return user.student.level
+    @admin.display(description='Level', ordering='student__level')
+    def level(self, student):
+        return student.get_level_display()
 
 
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_required', 'deadline', 'max_score')
+    ordering = ('deadline', 'is_required')
+    list_display = ('name', 'required_status', 'deadline', 'max_score')
+
+    @admin.display(boolean=True, ordering='is_required', description='Required Status')
+    def required_status(self, task):
+        return task.is_required
 
 
-class StudentTaskStatusAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'task_name', 'is_complete', 'score')
+class TaskStatusAdmin(admin.ModelAdmin):
+    ordering = ('is_complete', 'student__user__username')
+    list_display = ('username', 'full_name', 'task_name', 'complete_status', 'score')
 
-    @admin.display(description='Name', ordering='student__user__first_name')
-    def full_name(self, status):
-        return status.student.user.get_full_name()
+    @admin.display(ordering='student__user__username')
+    def username(self, taskstatus):
+        return taskstatus.student.user.get_username()
 
-    @admin.display(description='Task', ordering='task__name')
-    def task_name(self, status):
-        return status.task.name
+    @admin.display(ordering='student__user__first_name')
+    def full_name(self, taskstatus):
+        return taskstatus.student.user.get_full_name()
+
+    @admin.display(ordering='task__name', description='Task')
+    def task_name(self, taskstatus):
+        return taskstatus.task.name
+
+    @admin.display(boolean=True, ordering='is_complete', description='Complete Status')
+    def complete_status(self, taskstatus):
+        return taskstatus.is_complete
 
 
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+admin.site.register(Student, StudentAdmin)
 admin.site.register(Task, TaskAdmin)
-admin.site.register(StudentTaskStatus, StudentTaskStatusAdmin)
+admin.site.register(TaskStatus, TaskStatusAdmin)

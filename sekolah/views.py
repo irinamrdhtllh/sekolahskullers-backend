@@ -2,7 +2,7 @@ import csv, io
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login
-from django.contrib.auth.models import User, UserManager
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render

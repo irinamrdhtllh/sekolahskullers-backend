@@ -6,7 +6,7 @@
 <p>{{ student.user.username }} - {{ student.user.get_full_name }}</p>
 <p>{{ student.get_level_display }} - HP : {{ student.health }} - XP : {{ student.exp }}</p>
 <ul>
-  {% for status in student.studenttaskstatus_set.all %}
+  {% for status in student.taskstatus_set.all %}
     <li>
       <p>{{ status.task.name }} - {{ status.task.is_required }} - {{ status.task.deadline }} - {{ status.score }}/{{ status.task.max_score }} - {{ status.is_complete }}</p>
     </li>

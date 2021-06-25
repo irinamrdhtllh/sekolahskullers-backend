@@ -1,8 +1,11 @@
-from django import urls
-from django.urls import path
-from django.urls.conf import include
+from django.urls import include, path
+
+from rest_framework import routers
 
 from . import views
+
+router = routers.DefaultRouter()
+router.register(r'students', views.StudentViewSet)
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -13,4 +16,6 @@ urlpatterns = [
     path('group/', views.group, name='group'),
     path('student/', views.student, name='student'),
     path('upload/<action>/', views.upload),
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls'), name='rest_framework'),
 ]

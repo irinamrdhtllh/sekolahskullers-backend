@@ -2,10 +2,10 @@ from django.urls import include, path
 
 from rest_framework import routers
 
-from . import views
+from . import views, api
 
 router = routers.DefaultRouter()
-router.register(r'students', views.StudentViewSet)
+router.register(r'students', api.StudentViewSet)
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -17,5 +17,7 @@ urlpatterns = [
     path('student/', views.student, name='student'),
     path('upload/<action>/', views.upload),
     path('api/', include(router.urls)),
+    path('api/auth/register/', api.register),
+    path('api/auth/login/', api.login),
     path('api-auth/', include('rest_framework.urls'), name='rest_framework'),
 ]

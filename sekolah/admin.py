@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from rest_framework.authtoken.admin import TokenAdmin
+
 from .models import Student, Task, TaskStatus
 
 
@@ -49,6 +51,8 @@ class TaskStatusAdmin(admin.ModelAdmin):
     def complete_status(self, taskstatus):
         return taskstatus.is_complete
 
+
+TokenAdmin.raw_id_fields = ['user']
 
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Task, TaskAdmin)

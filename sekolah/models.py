@@ -13,9 +13,7 @@ class Student(models.Model):
         LEVEL3 = 3, 'Level 3'
 
     MILESTONES = [0, 1000, 2000, 3000]
-    level = models.IntegerField(
-        choices=Level.choices, default=Level.LEVEL1
-    )
+    level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
 
     def __str__(self):
         return f"{self.user.get_username()} - {self.user.get_full_name()}"

@@ -7,11 +7,9 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
 
-from rest_framework import viewsets, permissions
 
 from .forms import RegistrationForm
 from .models import Student, Task
-from .serializers import StudentSerializer
 
 
 def home(request):
@@ -89,10 +87,3 @@ def profile(request):
         return render(request, 'profile.html', {'student': request.user.student})
     else:
         return HttpResponseRedirect(reverse('login'))
-
-
-class StudentViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'user__username'

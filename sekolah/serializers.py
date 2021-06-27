@@ -6,17 +6,6 @@ from rest_framework import serializers
 from .models import Student
 
 
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
-
-    def validate(self, data):
-        user = authenticate(**data)
-        if user is not None:
-            return user
-        return serializers.ValidationError('Incorrect username or password')
-
-
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(max_length=128, style={'input_type': 'password'})
 

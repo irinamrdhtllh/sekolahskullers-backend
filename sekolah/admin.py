@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group as AdminGroup
 
-from rest_framework.authtoken.admin import TokenAdmin
-
 from .models import (
     Student,
     StudentTask,
@@ -108,7 +106,7 @@ class GroupTaskStatusAdmin(admin.ModelAdmin):
         return taskstatus.is_complete
 
 
-TokenAdmin.raw_id_fields = ['user']
+# TokenAdmin.raw_id_fields = ['user']
 admin.site.unregister(AdminGroup)
 
 

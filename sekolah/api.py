@@ -1,47 +1,52 @@
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
+from django.contrib.auth import login
 
-from rest_framework import viewsets, permissions, status
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
+from rest_framework import viewsets, permissions, generics
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 
+from knox.auth import TokenAuthentication
+from knox.models import AuthToken
+from knox.views import LoginView as KnoxLoginView
+
 from .models import Student
-from .serializers import RegisterSerializer, LoginSerializer, StudentSerializer
+from .serializers import RegisterSerializer, StudentSerializer
 
 
 class StudentViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.AllowAny]
     lookup_field = 'user__username'
 
 
-@api_view(['POST'])
-def register(request):
-    if request.method == 'POST':
+class LoginView(KnoxLoginView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return super().post(request, format=None)
+
+
+class RegisterView(generics.GenericAPIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
         serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            user = User.objects.get(username=serializer.validated_data['username'])
-            token, created = Token.objects.get_or_create(user=user)
-            return Response(
-                {'username': user.username, 'token': token.key},
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def login(request):
-    if request.method == 'POST':
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.validated_data
-            token = Token.objects.get(user=user)
-            return Response(
-                {'username': user.username, 'token': token.key},
-                status=status.HTTP_200_OK,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        login(request, user)
+        return Response(
+            {
+                'student': StudentSerializer(
+                    user.student, context=self.get_serializer_context()
+                ).data,
+                'token': AuthToken.objects.create(user)[1],
+            }
+        )

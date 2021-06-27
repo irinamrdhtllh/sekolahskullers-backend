@@ -48,10 +48,13 @@ def upload(request, action):
 
     for column in csv.reader(io_string):
         if action == 'student':
-            user, created = User.objects.get_or_create(
-                username=column[0], first_name=column[1], last_name=column[2]
-            )
+            user, created = User.objects.get_or_create(username=column[0])
             if created:
+                user.first_name = column[1]
+                user.last_name = column[2]
+                user.email = f'{column[1]}@skullers.com'
+                user.set_password(column[0])
+                user.save()
                 Student.objects.create(user=user)
 
         elif action == 'assign':

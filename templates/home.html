@@ -1,18 +1,13 @@
-{% extends 'base.html' %}
-
-{% block title %}Home{% endblock title %}
-
-{% block content %}
-{% if user.is_authenticated %}
-<p>Hi, {{ user.first_name }}</p>
-<a href="{% url 'logout' %}">Logout</a>
-{% else %}
-<p>You are not logged in</p>
-<p>
-  <a href="{% url 'login' %}">Login</a>
-</p>
-<p>
-  <a href="{% url 'register' %}">Register</a>
-</p>
-{% endif %}
-{% endblock content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sekolah Skullers</title>
+  </head>
+  <body>
+    <h1>Sekolah Skullers 2021 REST API</h1>
+    <a href="/admin/login">Login</a>
+  </body>
+</html>

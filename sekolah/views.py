@@ -1,35 +1,19 @@
 import csv, io
 
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
 
-
-from .forms import RegistrationForm
 from .models import Student, Task
 
 
 def home(request):
-    return render(request, 'home.html', {'user': request.user})
+    return render(request, 'home.html')
 
 
-def year(request):
-    pass
-
-
-def group(request):
-    pass
-
-
-def student(request):
-    students = Student.objects.all()
-    return render(request, 'student.html', {'students': students})
-
-
-@staff_member_required(login_url='login')
+@staff_member_required()
 def upload(request, action):
     """
     Menambahkan data dari file CSV yang diupload oleh admin. Terdapat tiga jenis
@@ -67,26 +51,3 @@ def upload(request, action):
             user.student.complete_task(column[1], column[2])
 
     return HttpResponseRedirect(reverse('home'))
-
-
-def register(request):
-    """
-    Membuat Student dengan field: username, first_name, last_name, email.
-    """
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            Student.objects.create(user=user)
-            login(request, user)
-            return HttpResponseRedirect(reverse('home'))
-    else:
-        form = RegistrationForm()
-    return render(request, 'registration/register.html', {'form': form})
-
-
-def profile(request):
-    if request.user.is_authenticated:
-        return render(request, 'profile.html', {'student': request.user.student})
-    else:
-        return HttpResponseRedirect(reverse('login'))

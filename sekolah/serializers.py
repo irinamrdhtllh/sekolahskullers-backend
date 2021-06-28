@@ -1,9 +1,8 @@
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
-from .models import Student
+from .models import Student, StudentTaskStatus, Group, GroupTaskStatus
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -37,12 +36,49 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class StudentTaskStatusSerializer(serializers.ModelSerializer):
+    task = serializers.StringRelatedField()
+
+    class Meta:
+        model = StudentTaskStatus
+        fields = ['task', 'is_complete', 'score']
+
+
 class StudentSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
-    level = serializers.CharField(source='get_level_display', required=False)
+    level = serializers.CharField(source='get_level_display')
+    group = serializers.StringRelatedField()
+    task_statuses = StudentTaskStatusSerializer(many=True)
 
     class Meta:
         model = Student
-        fields = ['username', 'first_name', 'last_name', 'health', 'exp', 'level']
+        fields = [
+            'username',
+            'first_name',
+            'last_name',
+            'health',
+            'exp',
+            'level',
+            'group',
+            'task_statuses',
+        ]
+
+
+class GroupTaskStatusSerializer(serializers.ModelSerializer):
+    task = serializers.StringRelatedField()
+
+    class Meta:
+        model = GroupTaskStatus
+        fields = ['task', 'is_complete', 'score']
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    level = serializers.CharField(source='get_level_display')
+    task_statuses = GroupTaskStatusSerializer(many=True)
+    students = StudentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Group
+        fields = ['name', 'health', 'exp', 'level', 'task_statuses', 'students']

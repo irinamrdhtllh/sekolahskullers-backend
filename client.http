@@ -1,0 +1,46 @@
+### Register
+POST http://127.0.0.1:8000/api/auth/register/
+Content-Type: application/json
+
+{
+    "first_name": "Saleh",
+    "last_name": "Zaidan",
+    "username": "13318006",
+    "email": "saleh@skullers.com",
+    "password": "13318006",
+    "password2": "13318006"
+}
+
+
+### Login
+POST http://127.0.0.1:8000/api/auth/login/
+Content-Type: application/json
+
+{
+    "username": "13318006",
+    "password": "13318006"
+}
+
+
+### Logout
+POST http://127.0.0.1:8000/api/auth/logout/
+Content-Type: application/json
+Authorization: Token 
+
+
+### List students
+GET http://127.0.0.1:8000/api/students/
+
+
+### List groups
+GET http://127.0.0.1:8000/api/groups/
+
+
+### Retrieve student
+GET http://127.0.0.1:8000/api/auth/profile
+Authorization: Token b7e97661266a100b62ddb17110d9ac511434c4aa3777f4e66d816782a70dcddd
+
+
+### Retrieve group
+GET http://127.0.0.1:8000/api/auth/profile/group/
+Authorization: Token b7e97661266a100b62ddb17110d9ac511434c4aa3777f4e66d816782a70dcddd

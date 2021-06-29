@@ -2,15 +2,21 @@ from django.contrib import admin
 from django.contrib.auth.models import Group as AdminGroup
 
 from .models import (
+    Assessment,
     Student,
     StudentTask,
     StudentTaskStatus,
     Group,
     GroupTask,
     GroupTaskStatus,
+    Mission,
     ClassYear,
     ClassYearTask,
 )
+
+
+class AssessmentInline(admin.StackedInline):
+    model = Assessment
 
 
 class StudentInline(admin.TabularInline):
@@ -25,8 +31,15 @@ class GroupTaskStatusInline(admin.TabularInline):
     model = GroupTask.groups.through
 
 
+class MissionInline(admin.StackedInline):
+    model = Mission
+
+
 class StudentAdmin(admin.ModelAdmin):
-    inlines = (StudentTaskStatusInline,)
+    inlines = (
+        AssessmentInline,
+        StudentTaskStatusInline,
+    )
     ordering = ('user__username',)
     list_display = ('username', 'full_name', 'health', 'exp', 'level')
 
@@ -76,7 +89,10 @@ class StudentTaskStatusAdmin(admin.ModelAdmin):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    inlines = (StudentInline,)
+    inlines = (
+        GroupTaskStatusInline,
+        StudentInline,
+    )
     list_display = ('name', 'health', 'exp', 'level')
 
 
@@ -109,6 +125,7 @@ class GroupTaskStatusAdmin(admin.ModelAdmin):
 
 
 class ClassYearAdmin(admin.ModelAdmin):
+    inlines = (MissionInline,)
     list_display = ('name', 'health', 'exp', 'level')
 
 
@@ -132,7 +149,7 @@ class ClassYearTaskAdmin(admin.ModelAdmin):
         (
             'Task status',
             {
-                "fields": ('is_complete', 'score'),
+                "fields": ('class_year', 'is_complete', 'score'),
             },
         ),
     )

@@ -10,9 +10,25 @@ class Task(models.Model):
     is_required = models.BooleanField()
     deadline = models.DateTimeField('deadline date')
     max_score = models.IntegerField(verbose_name='maximum score', default=100)
+    link = models.CharField(max_length=100, unique=True, null=True)
 
     def __str__(self):
         return self.name
+
+
+class Assessment(models.Model):
+    student = models.OneToOneField('Student', on_delete=models.CASCADE, null=True)
+
+    assessment1 = models.IntegerField(verbose_name='kepemimpinan', default=0)
+    assessment2 = models.IntegerField(verbose_name='keteknikfisikaan', default=0)
+    assessment3 = models.IntegerField(verbose_name='kemahasiswaan', default=0)
+    assessment4 = models.IntegerField(verbose_name='solidaritas', default=0)
+    assessment5 = models.IntegerField(verbose_name='kolaboratif', default=0)
+    assessment6 = models.IntegerField(verbose_name='semangat menjelajah', default=0)
+    assessment7 = models.IntegerField(verbose_name='semangat memaknai', default=0)
+
+    def __str__(self):
+        return self.student.__str__()
 
 
 class Student(models.Model):
@@ -209,6 +225,14 @@ class GroupTaskStatus(models.Model):
         super().save(*args, **kwargs)
 
 
+class Mission(models.Model):
+    class_year = models.ForeignKey('ClassYear', related_name='missions', on_delete=models.CASCADE)
+    text = models.TextField(default='')
+
+    def __str__(self):
+        return '#' + str(self.pk)
+
+
 class ClassYear(models.Model):
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Level 1'
@@ -221,6 +245,7 @@ class ClassYear(models.Model):
     health = models.IntegerField(default=100)
     exp = models.IntegerField(verbose_name='experience', default=0)
     level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
+    vision = models.TextField(default='')
 
     def __str__(self):
         return self.name

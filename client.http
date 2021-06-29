@@ -2,6 +2,15 @@
 POST http://127.0.0.1:8000/api/register/
 Content-Type: application/json
 
+# {
+#     "first_name": "Irina",
+#     "last_name": "Mardhatillah",
+#     "username": "13319090",
+#     "email": "irina@skullers.com",
+#     "password": "13319090",
+#     "password2": "13319090"
+# }
+
 {
     "first_name": "Saleh",
     "last_name": "Zaidan",
@@ -11,21 +20,20 @@ Content-Type: application/json
     "password2": "13318006"
 }
 
-
 ### Login
 POST http://127.0.0.1:8000/api/login/
 Content-Type: application/json
 
 {
-    "username": "13318006",
-    "password": "13318006"
+    "username": "13319090",
+    "password": "13319090"
 }
 
 
 ### Logout
 POST http://127.0.0.1:8000/api/logout/
 Content-Type: application/json
-Authorization: Token 
+Authorization: Token 850018371025752a7d59ad5be54dadefe1e898966f5a4f1c28dddb879972430f
 
 
 ### List students
@@ -42,10 +50,10 @@ GET http://127.0.0.1:8000/api/class-year/
 
 ### Retrieve student
 GET http://127.0.0.1:8000/api/auth/profile
-Authorization: Token 
+Authorization: Token 850018371025752a7d59ad5be54dadefe1e898966f5a4f1c28dddb879972430f
 
 
 ### Retrieve group
 GET http://127.0.0.1:8000/api/auth/profile/group/
-Authorization: Token 
+Authorization: Token 850018371025752a7d59ad5be54dadefe1e898966f5a4f1c28dddb879972430f
 

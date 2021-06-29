@@ -112,6 +112,9 @@ class StudentTaskStatus(models.Model):
         verbose_name = 'student task status'
         verbose_name_plural = 'student task statuses'
 
+    def __str__(self):
+        return f'{self.student.user.get_username()} - {self.task.name}'
+
     def save(self, commit=True, *args, **kwargs):
         if commit and self.is_complete:
             self.student.complete_task(self.task.name, self.score)
@@ -197,7 +200,79 @@ class GroupTaskStatus(models.Model):
         verbose_name = 'group task status'
         verbose_name_plural = 'group task statuses'
 
+    def __str__(self):
+        return f'{self.group.name} - {self.task.name}'
+
     def save(self, commit=True, *args, **kwargs):
         if commit and self.is_complete:
             self.group.complete_task(self.task.name, self.score)
+        super().save(*args, **kwargs)
+
+
+class ClassYear(models.Model):
+    class Level(models.IntegerChoices):
+        LEVEL1 = 1, 'Level 1'
+        LEVEL2 = 2, 'Level 2'
+        LEVEL3 = 3, 'Level 3'
+
+    MILESTONES = [0, 1000, 2000, 3000]
+
+    name = models.CharField(max_length=25)
+    health = models.IntegerField(default=100)
+    exp = models.IntegerField(verbose_name='experience', default=0)
+    level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
+
+    def __str__(self):
+        return self.name
+
+    def update_level(self):
+        for i in range(len(self.Level.values)):
+            if self.exp >= self.MILESTONES[i] and self.exp < self.MILESTONES[i + 1]:
+                self.level = self.Level.values[i]
+
+    def relative_exp(self):
+        for i in range(len(self.Level.values)):
+            if self.level == self.Level.values[i]:
+                low = self.MILESTONES[i]
+                high = self.MILESTONES[i + 1]
+                return 100 * (self.exp - low) / (high - low)
+
+    def is_alive(self):
+        if self.health > 0:
+            return True
+        else:
+            return False
+
+    def save(self, *args, **kwargs):
+        self.update_level()
+        super().save(*args, **kwargs)
+
+    def complete_task(self, name, score):
+        """
+        Menyelesaikan Task bernama name dan memberi skor sebesar score.
+        """
+        task = self.tasks.get(name=name)
+        task.is_complete = True
+        task.score = score
+        task.save(commit=False)
+        self.exp += int(score)
+        self.save()
+
+
+class ClassYearTask(Task):
+    class_year = models.ForeignKey(
+        ClassYear, related_name='tasks', on_delete=models.CASCADE
+    )
+    is_complete = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'class year task status'
+        verbose_name_plural = 'class year task statuses'
+
+    def save(self, commit=True, *args, **kwargs):
+        if not self.is_complete and self.score != 0:
+            raise Exception('Score must be 0 when the Task is still not completed.')
+        if commit and self.is_complete:
+            self.class_year.complete_task(self.name, self.score)
         super().save(*args, **kwargs)

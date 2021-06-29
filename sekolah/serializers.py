@@ -2,7 +2,14 @@ from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
-from .models import Student, StudentTaskStatus, Group, GroupTaskStatus
+from .models import (
+    Student,
+    StudentTaskStatus,
+    Group,
+    GroupTaskStatus,
+    ClassYear,
+    ClassYearTask,
+)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -38,10 +45,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class StudentTaskStatusSerializer(serializers.ModelSerializer):
     task = serializers.StringRelatedField()
+    is_required = serializers.BooleanField(source='task.is_required')
+    deadline = serializers.DateTimeField(source='task.deadline')
+    max_score = serializers.IntegerField(source='task.max_score')
 
     class Meta:
         model = StudentTaskStatus
-        fields = ['task', 'is_complete', 'score']
+        fields = ['task', 'is_complete', 'score', 'is_required', 'deadline', 'max_score']
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -82,3 +92,18 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ['name', 'health', 'exp', 'level', 'task_statuses', 'students']
+
+
+class ClassYearTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClassYearTask
+        fields = ['name', 'is_complete', 'score']
+
+
+class ClassYearSerializer(serializers.ModelSerializer):
+    level = serializers.CharField(source='get_level_display')
+    tasks = ClassYearTaskSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Group
+        fields = ['name', 'health', 'exp', 'level', 'tasks']

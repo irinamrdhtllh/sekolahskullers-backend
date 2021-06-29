@@ -1,5 +1,5 @@
 ### Register
-POST http://127.0.0.1:8000/api/auth/register/
+POST http://127.0.0.1:8000/api/register/
 Content-Type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-Type: application/json
 
 
 ### Login
-POST http://127.0.0.1:8000/api/auth/login/
+POST http://127.0.0.1:8000/api/login/
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 
 ### Logout
-POST http://127.0.0.1:8000/api/auth/logout/
+POST http://127.0.0.1:8000/api/logout/
 Content-Type: application/json
 Authorization: Token 
 
@@ -36,11 +36,16 @@ GET http://127.0.0.1:8000/api/students/
 GET http://127.0.0.1:8000/api/groups/
 
 
+### List class year
+GET http://127.0.0.1:8000/api/class-year/
+
+
 ### Retrieve student
 GET http://127.0.0.1:8000/api/auth/profile
-Authorization: Token b7e97661266a100b62ddb17110d9ac511434c4aa3777f4e66d816782a70dcddd
+Authorization: Token 
 
 
 ### Retrieve group
 GET http://127.0.0.1:8000/api/auth/profile/group/
-Authorization: Token b7e97661266a100b62ddb17110d9ac511434c4aa3777f4e66d816782a70dcddd
+Authorization: Token 
+

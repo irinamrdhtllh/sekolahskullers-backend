@@ -8,6 +8,8 @@ from .models import (
     Group,
     GroupTask,
     GroupTaskStatus,
+    ClassYear,
+    ClassYearTask,
 )
 
 
@@ -106,9 +108,45 @@ class GroupTaskStatusAdmin(admin.ModelAdmin):
         return taskstatus.is_complete
 
 
-# TokenAdmin.raw_id_fields = ['user']
-admin.site.unregister(AdminGroup)
+class ClassYearAdmin(admin.ModelAdmin):
+    list_display = ('name', 'health', 'exp', 'level')
 
+
+class ClassYearTaskAdmin(admin.ModelAdmin):
+    ordering = ('deadline', 'is_required')
+    list_display = (
+        'name',
+        'required_status',
+        'deadline',
+        'max_score',
+        'complete_status',
+        'score',
+    )
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ('name', 'is_required', 'deadline', 'max_score'),
+            },
+        ),
+        (
+            'Task status',
+            {
+                "fields": ('is_complete', 'score'),
+            },
+        ),
+    )
+
+    @admin.display(boolean=True, ordering='is_required', description='Required Status')
+    def required_status(self, task):
+        return task.is_required
+
+    @admin.display(boolean=True, ordering='is_complete', description='Complete Status')
+    def complete_status(self, task):
+        return task.is_complete
+
+
+admin.site.unregister(AdminGroup)
 
 admin.site.register(Student, StudentAdmin)
 admin.site.register(StudentTask, StudentTaskAdmin)
@@ -117,3 +155,6 @@ admin.site.register(StudentTaskStatus, StudentTaskStatusAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(GroupTask, GroupTaskAdmin)
 admin.site.register(GroupTaskStatus, GroupTaskStatusAdmin)
+
+admin.site.register(ClassYear, ClassYearAdmin)
+admin.site.register(ClassYearTask, ClassYearTaskAdmin)

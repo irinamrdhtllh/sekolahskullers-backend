@@ -5,8 +5,13 @@ from rest_framework.response import Response
 
 from knox.models import AuthToken
 
-from .models import Student, Group
-from .serializers import RegisterSerializer, StudentSerializer, GroupSerializer
+from .models import Student, Group, ClassYear
+from .serializers import (
+    RegisterSerializer,
+    StudentSerializer,
+    GroupSerializer,
+    ClassYearSerializer,
+)
 
 
 class LoginView(generics.GenericAPIView):
@@ -53,6 +58,14 @@ class GroupView(generics.ListAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class ClassYearView(generics.RetrieveAPIView):
+    serializer_class = ClassYearSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_object(self):
+        return ClassYear.objects.get(pk=1)
 
 
 class ProfileView(generics.RetrieveAPIView):

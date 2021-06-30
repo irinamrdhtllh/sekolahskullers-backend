@@ -1,9 +1,9 @@
-from rest_framework import permissions, generics
-from rest_framework.authentication import BasicAuthentication
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.response import Response
+from django.contrib.auth import login
 
-from knox.models import AuthToken
+from rest_framework import permissions, generics
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+
+from knox.views import LoginView as KnoxLoginView
 
 from .models import Student, Group, ClassYear
 from .serializers import (
@@ -14,38 +14,46 @@ from .serializers import (
 )
 
 
-class LoginView(generics.GenericAPIView):
+class LoginView(KnoxLoginView):
     permission_classes = [permissions.AllowAny]
+
+    def get_post_response_data(self, request, token, instance):
+        data = {
+            'student': StudentSerializer(
+                request.user.student, context=self.get_context()
+            ).data,
+            'expiry': self.format_expiry_datetime(instance.expiry),
+            'token': token,
+        }
+        return data
 
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        return Response(
-            {
-                'student': StudentSerializer(
-                    user.student, context=self.get_serializer_context()
-                ).data,
-                'token': AuthToken.objects.create(user)[1],
-            }
-        )
+        login(request, user)
+        return super().post(request, format=None)
 
 
-class RegisterView(generics.GenericAPIView):
+class RegisterView(KnoxLoginView):
     permission_classes = [permissions.AllowAny]
+
+    def get_post_response_data(self, request, token, instance):
+        data = {
+            'student': StudentSerializer(
+                request.user.student, context=self.get_context()
+            ).data,
+            'expiry': self.format_expiry_datetime(instance.expiry),
+            'token': token,
+        }
+        return data
 
     def post(self, request, format=None):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        return Response(
-            {
-                'student': StudentSerializer(
-                    user.student, context=self.get_serializer_context()
-                ).data,
-                'token': AuthToken.objects.create(user)[1],
-            }
-        )
+        login(request, user)
+        return super().post(request, format=None)
 
 
 class StudentView(generics.ListAPIView):

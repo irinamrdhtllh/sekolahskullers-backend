@@ -40,8 +40,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
-        assessment = Assessment.objects.create()
-        Student.objects.create(user=user, assessment=assessment)
+        Student.objects.create(user=user)
         return user
 
 

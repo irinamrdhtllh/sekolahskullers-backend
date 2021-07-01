@@ -30,3 +30,18 @@ Jalankan server
     $ (.venv) python manage.py runserver
 
 Laman admin dapat diakses pada alamat `/admin`
+
+## Petunjuk REST API
+
+Berikut daftar endpoint REST API yang dapat diakses dengan mengirim request ke rute yang diinginkan dengan metode yang sesuai (GET, POST, dsb). Untuk testing dapat menggunakan extension [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) pada Visual Studio Code. Beberapa contoh request terdapat pada file `client.http`
+
+- `POST /api/register/` : Register Student
+- `POST /api/login/` : Login Student
+- `POST /api/logout/` : Logout Student
+- `GET /api/students/` : List seluruh Student
+- `GET /api/groups/` : List seluruh Group
+- `GET /api/class-year/` : List Class Year
+- `GET /api/auth/profile/` : Retrieve Student saat ini (yang sedang login)
+- `GET /api/auth/profile/group/` : Retrieve Group saat ini
+
+Logout dan retrieve memerlukan token di header request. Token dapat diperoleh pada saat register/login

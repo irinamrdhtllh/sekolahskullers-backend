@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import (
-    Assessment,
     Student,
     StudentTaskStatus,
     Group,
@@ -72,8 +71,8 @@ class AssessmentField(serializers.Field):
             'kemahasiswaan': value.assessment3,
             'solidaritas': value.assessment4,
             'kolaboratif': value.assessment5,
-            'semangat menjelajah': value.assessment6,
-            'semangat memaknai': value.assessment7,
+            'semangatMenjelajah': value.assessment6,
+            'semangatMemaknai': value.assessment7,
         }
 
 

@@ -2,26 +2,17 @@
 POST http://127.0.0.1:8000/api/register/
 Content-Type: application/json
 
-# {
-#     "first_name": "Irina",
-#     "last_name": "Mardhatillah",
-#     "username": "13319090",
-#     "email": "irina@skullers.com",
-#     "password": "13319090",
-#     "password2": "13319090"
-# }
-
 {
-    "first_name": "Saleh",
-    "last_name": "Zaidan",
-    "username": "13318006",
-    "email": "saleh@skullers.com",
-    "password": "13318006",
-    "password2": "13318006"
+    "first_name": "Irina",
+    "last_name": "Mardhatillah",
+    "username": "13319090",
+    "email": "irina@skullers.com",
+    "password": "13319090",
+    "password2": "13319090"
 }
 
-### Login
-POST http://127.0.0.1:8000/api/login/
+### Generate new pair of token
+POST http://127.0.0.1:8000/api/token/
 Content-Type: application/json
 
 {
@@ -30,10 +21,13 @@ Content-Type: application/json
 }
 
 
-### Logout
-POST http://127.0.0.1:8000/api/logout/
+### Use refresh token to obtain new access token
+POST http://127.0.0.1:8000/api/token/
 Content-Type: application/json
-Authorization: Token 850018371025752a7d59ad5be54dadefe1e898966f5a4f1c28dddb879972430f
+
+{
+    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyNTMxOTYzMSwianRpIjoiNGM1ZmZhMjk0MWUxNDk2ODlhZDIxM2U5MmJjYTM3MWYiLCJ1c2VyX2lkIjoxMX0.mStnEil0R19cYXewB73QI5MbNIDP2B__N9nw7MOF408"
+}
 
 
 ### List students
@@ -50,10 +44,10 @@ GET http://127.0.0.1:8000/api/class-year/
 
 ### Retrieve student
 GET http://127.0.0.1:8000/api/auth/profile
-Authorization: Token 850018371025752a7d59ad5be54dadefe1e898966f5a4f1c28dddb879972430f
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MjMzNTMxLCJqdGkiOiIzOTk4NzU1YjU1ZWU0YTNhYmY4MGM1YTBjMzA3NmZlOSIsInVzZXJfaWQiOjExfQ.Nr548wEcyad6F4qUEbhyeyphE0H4zwKVejy232D9SY8
 
 
 ### Retrieve group
 GET http://127.0.0.1:8000/api/auth/profile/group/
-Authorization: Token 850018371025752a7d59ad5be54dadefe1e898966f5a4f1c28dddb879972430f
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MjMzNTMxLCJqdGkiOiIzOTk4NzU1YjU1ZWU0YTNhYmY4MGM1YTBjMzA3NmZlOSIsInVzZXJfaWQiOjExfQ.Nr548wEcyad6F4qUEbhyeyphE0H4zwKVejy232D9SY8
 

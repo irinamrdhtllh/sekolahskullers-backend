@@ -9,10 +9,6 @@ from django.shortcuts import get_object_or_404, render
 from .models import Student, Task
 
 
-def home(request):
-    return render(request, 'home.html')
-
-
 @staff_member_required()
 def upload(request, action):
     """

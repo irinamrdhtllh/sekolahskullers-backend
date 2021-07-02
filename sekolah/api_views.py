@@ -1,9 +1,10 @@
-from django.contrib.auth import login
-
 from rest_framework import permissions, generics
-from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
-from knox.views import LoginView as KnoxLoginView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Student, Group, ClassYear
 from .serializers import (
@@ -14,46 +15,39 @@ from .serializers import (
 )
 
 
-class LoginView(KnoxLoginView):
-    permission_classes = [permissions.AllowAny]
-
-    def get_post_response_data(self, request, token, instance):
-        data = {
-            'student': StudentSerializer(
-                request.user.student, context=self.get_context()
-            ).data,
-            'expiry': self.format_expiry_datetime(instance.expiry),
-            'token': token,
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response(
+        {
+            'register': reverse('register', request=request, format=format),
+            'token_obtain_pair': reverse(
+                'token_obtain_pair', request=request, format=format
+            ),
+            'token_refresh': reverse('token_refresh', request=request, format=format),
+            'students': reverse('students', request=request, format=format),
+            'groups': reverse('groups', request=request, format=format),
+            'class-year': reverse('class_year', request=request, format=format),
+            'profile': reverse('profile', request=request, format=format),
+            'group_profile': reverse('group_profile', request=request, format=format),
         }
-        return data
-
-    def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        login(request, user)
-        return super().post(request, format=None)
+    )
 
 
-class RegisterView(KnoxLoginView):
+class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
-
-    def get_post_response_data(self, request, token, instance):
-        data = {
-            'student': StudentSerializer(
-                request.user.student, context=self.get_context()
-            ).data,
-            'expiry': self.format_expiry_datetime(instance.expiry),
-            'token': token,
-        }
-        return data
 
     def post(self, request, format=None):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        login(request, user)
-        return super().post(request, format=None)
+        refresh = RefreshToken.for_user(user)
+
+        return Response(
+            {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+        )
 
 
 class StudentView(generics.ListAPIView):

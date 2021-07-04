@@ -11,7 +11,7 @@ Content-Type: application/json
     "password2": "13319090"
 }
 
-### Generate new pair of token
+### Login and generate new pair of token
 POST http://127.0.0.1:8000/api/token/
 Content-Type: application/json
 
@@ -21,13 +21,9 @@ Content-Type: application/json
 }
 
 
-### Use refresh token to obtain new access token
-POST http://127.0.0.1:8000/api/token/
+### Use refresh token from cookie to obtain new access token
+POST http://127.0.0.1:8000/api/token/refresh/
 Content-Type: application/json
-
-{
-    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyNTMxOTYzMSwianRpIjoiNGM1ZmZhMjk0MWUxNDk2ODlhZDIxM2U5MmJjYTM3MWYiLCJ1c2VyX2lkIjoxMX0.mStnEil0R19cYXewB73QI5MbNIDP2B__N9nw7MOF408"
-}
 
 
 ### List students
@@ -43,11 +39,11 @@ GET http://127.0.0.1:8000/api/class-year/
 
 
 ### Retrieve student
-GET http://127.0.0.1:8000/api/auth/profile
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MjMzNTMxLCJqdGkiOiIzOTk4NzU1YjU1ZWU0YTNhYmY4MGM1YTBjMzA3NmZlOSIsInVzZXJfaWQiOjExfQ.Nr548wEcyad6F4qUEbhyeyphE0H4zwKVejy232D9SY8
+GET http://127.0.0.1:8000/api/profile
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MzgwMzQxLCJqdGkiOiIwZDE2NzI3MTdmY2E0ZjQ3OGVkZWVjMTMxNjQzYmU2NiIsInVzZXJfaWQiOjExLCJ1c2VybmFtZSI6IjEzMzE5MDkwIn0.fa5uWkYAGi_qgmXO1AobOVodifCqSxOEU0XXvx4W778
 
 
 ### Retrieve group
-GET http://127.0.0.1:8000/api/auth/profile/group/
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MjMzNTMxLCJqdGkiOiIzOTk4NzU1YjU1ZWU0YTNhYmY4MGM1YTBjMzA3NmZlOSIsInVzZXJfaWQiOjExfQ.Nr548wEcyad6F4qUEbhyeyphE0H4zwKVejy232D9SY8
+GET http://127.0.0.1:8000/api/profile/group/
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MzgwMzQxLCJqdGkiOiIwZDE2NzI3MTdmY2E0ZjQ3OGVkZWVjMTMxNjQzYmU2NiIsInVzZXJfaWQiOjExLCJ1c2VybmFtZSI6IjEzMzE5MDkwIn0.fa5uWkYAGi_qgmXO1AobOVodifCqSxOEU0XXvx4W778
 

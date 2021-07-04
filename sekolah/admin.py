@@ -1,38 +1,26 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group as AdminGroup
 
-from .models import (
-    Assessment,
-    Student,
-    StudentTask,
-    StudentTaskStatus,
-    Group,
-    GroupTask,
-    GroupTaskStatus,
-    Mission,
-    ClassYear,
-    ClassYearTask,
-)
+from rest_framework_simplejwt import token_blacklist
+
+from . import models
+
+admin.site.unregister(AdminGroup)
+
+
+### Student ###
 
 
 class AssessmentInline(admin.StackedInline):
-    model = Assessment
+    model = models.Assessment
 
 
 class StudentInline(admin.TabularInline):
-    model = Student
+    model = models.Student
 
 
 class StudentTaskStatusInline(admin.TabularInline):
-    model = StudentTask.students.through
-
-
-class GroupTaskStatusInline(admin.TabularInline):
-    model = GroupTask.groups.through
-
-
-class MissionInline(admin.StackedInline):
-    model = Mission
+    model = models.StudentTask.students.through
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -88,6 +76,18 @@ class StudentTaskStatusAdmin(admin.ModelAdmin):
         return taskstatus.is_complete
 
 
+admin.site.register(models.Student, StudentAdmin)
+admin.site.register(models.StudentTask, StudentTaskAdmin)
+admin.site.register(models.StudentTaskStatus, StudentTaskStatusAdmin)
+
+
+### Group ###
+
+
+class GroupTaskStatusInline(admin.TabularInline):
+    model = models.GroupTask.groups.through
+
+
 class GroupAdmin(admin.ModelAdmin):
     inlines = (
         GroupTaskStatusInline,
@@ -122,6 +122,18 @@ class GroupTaskStatusAdmin(admin.ModelAdmin):
     @admin.display(boolean=True, ordering='is_complete', description='Complete Status')
     def complete_status(self, taskstatus):
         return taskstatus.is_complete
+
+
+admin.site.register(models.Group, GroupAdmin)
+admin.site.register(models.GroupTask, GroupTaskAdmin)
+admin.site.register(models.GroupTaskStatus, GroupTaskStatusAdmin)
+
+
+### Class Year ###
+
+
+class MissionInline(admin.StackedInline):
+    model = models.Mission
 
 
 class ClassYearAdmin(admin.ModelAdmin):
@@ -163,15 +175,16 @@ class ClassYearTaskAdmin(admin.ModelAdmin):
         return task.is_complete
 
 
-admin.site.unregister(AdminGroup)
+admin.site.register(models.ClassYear, ClassYearAdmin)
+admin.site.register(models.ClassYearTask, ClassYearTaskAdmin)
 
-admin.site.register(Student, StudentAdmin)
-admin.site.register(StudentTask, StudentTaskAdmin)
-admin.site.register(StudentTaskStatus, StudentTaskStatusAdmin)
 
-admin.site.register(Group, GroupAdmin)
-admin.site.register(GroupTask, GroupTaskAdmin)
-admin.site.register(GroupTaskStatus, GroupTaskStatusAdmin)
+# Fix can't delete user when using token_blacklist app
+# https://github.com/jazzband/djangorestframework-simplejwt/issues/266
+class OutstandingTokenAdmin(token_blacklist.admin.OutstandingTokenAdmin):
+    def has_delete_permission(self, *args, **kwargs):
+        return True
 
-admin.site.register(ClassYear, ClassYearAdmin)
-admin.site.register(ClassYearTask, ClassYearTaskAdmin)
+
+admin.site.unregister(token_blacklist.models.OutstandingToken)
+admin.site.register(token_blacklist.models.OutstandingToken, OutstandingTokenAdmin)

@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group as AdminGroup
 
-from rest_framework_simplejwt import token_blacklist
-
 from . import models
 
 admin.site.unregister(AdminGroup)
@@ -177,14 +175,3 @@ class ClassYearTaskAdmin(admin.ModelAdmin):
 
 admin.site.register(models.ClassYear, ClassYearAdmin)
 admin.site.register(models.ClassYearTask, ClassYearTaskAdmin)
-
-
-# Fix can't delete user when using token_blacklist app
-# https://github.com/jazzband/djangorestframework-simplejwt/issues/266
-class OutstandingTokenAdmin(token_blacklist.admin.OutstandingTokenAdmin):
-    def has_delete_permission(self, *args, **kwargs):
-        return True
-
-
-admin.site.unregister(token_blacklist.models.OutstandingToken)
-admin.site.register(token_blacklist.models.OutstandingToken, OutstandingTokenAdmin)

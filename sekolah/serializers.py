@@ -128,8 +128,8 @@ class AssessmentField(serializers.Field):
             'kemahasiswaan': value.assessment3,
             'solidaritas': value.assessment4,
             'kolaboratif': value.assessment5,
-            'semangatMenjelajah': value.assessment6,
-            'semangatMemaknai': value.assessment7,
+            'semangat_menjelajah': value.assessment6,
+            'semangat_memaknai': value.assessment7,
         }
 
 

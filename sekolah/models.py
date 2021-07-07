@@ -52,7 +52,7 @@ class Student(models.Model):
     )
 
     def __str__(self):
-        return f"{self.user.get_username()} - {self.user.get_full_name()}"
+        return f'{self.user.get_username()} - {self.user.get_full_name()}'
 
     def update_level(self):
         """
@@ -226,7 +226,9 @@ class GroupTaskStatus(models.Model):
 
 
 class Mission(models.Model):
-    class_year = models.ForeignKey('ClassYear', related_name='missions', on_delete=models.CASCADE)
+    class_year = models.ForeignKey(
+        'ClassYear', related_name='missions', on_delete=models.CASCADE
+    )
     text = models.TextField(default='')
 
     def __str__(self):

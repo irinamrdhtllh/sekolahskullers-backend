@@ -26,7 +26,6 @@ class StudentAdmin(admin.ModelAdmin):
         AssessmentInline,
         StudentTaskStatusInline,
     )
-    ordering = ('user__username',)
     list_display = ('username', 'full_name', 'health', 'exp', 'level')
 
     @admin.display(ordering='user__username')

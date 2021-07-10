@@ -32,6 +32,9 @@ class Assessment(models.Model):
 
 
 class Student(models.Model):
+    class Meta:
+        ordering = ['user__get_username']
+
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Level 1'
         LEVEL2 = 2, 'Level 2'
@@ -138,6 +141,9 @@ class StudentTaskStatus(models.Model):
 
 
 class Group(models.Model):
+    class Meta:
+        ordering = ['name']
+
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Level 1'
         LEVEL2 = 2, 'Level 2'

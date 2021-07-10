@@ -33,7 +33,7 @@ class Assessment(models.Model):
 
 class Student(models.Model):
     class Meta:
-        ordering = ['user__get_username']
+        ordering = ['user__username']
 
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Level 1'

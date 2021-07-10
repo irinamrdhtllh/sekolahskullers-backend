@@ -6,6 +6,7 @@ from . import views, api_views, auth_views
 urlpatterns = [
     path('', RedirectView.as_view(url='api/')),
     path('api-auth/', include('rest_framework.urls')),
+    path('upload/', views.upload, name='upload'),
     path('upload/<action>/', views.upload),
 ]
 

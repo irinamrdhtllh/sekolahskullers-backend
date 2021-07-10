@@ -10,16 +10,22 @@ from .models import Student, Task
 
 
 @staff_member_required()
-def upload(request, action):
+def upload(request, action=''):
     """
     Menambahkan data dari file CSV yang diupload oleh admin. Terdapat tiga jenis
-    aksi dengan format header masing-masing sebagai berikut:
-    1. student (membuat Student baru): nim, nama depan, nama belakang
-    2. assign (menambahkan Student ke Task yang diberikan): nim, nama task
-    3. complete (menyelesaikan Task dan memberi skor): nim, nama task, skor
+    `action` dengan format header untuk masing-masing sebagai berikut:
+
+    `student`
+        Membuat Student baru. [nim, nama depan, nama belakang]
+
+    `assign`
+        Menambahkan Student ke Task yang diberikan. [nim, nama task]
+
+    `complete`
+        Menyelesaikan Task dan memberi skor. [nim, nama task, skor]
     """
     if request.method == 'GET':
-        return render(request, 'upload.html')
+        return render(request, 'upload.html', {'action': action})
 
     file = request.FILES['file']
     data = file.read().decode('UTF-8')
@@ -46,4 +52,4 @@ def upload(request, action):
             user = get_object_or_404(User, username=column[0])
             user.student.complete_task(column[1], column[2])
 
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('upload'))

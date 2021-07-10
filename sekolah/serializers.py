@@ -73,6 +73,11 @@ class TokenRefreshSerializer(jwt_serializers.TokenRefreshSerializer):
         return data
 
 
+class LevelField(serializers.ChoiceField):
+    def to_representation(self, value):
+        return {'value': value, 'display': self.grouped_choices[value]}
+
+
 class StudentTaskStatusSerializer(serializers.ModelSerializer):
     task = serializers.StringRelatedField()
     is_required = serializers.BooleanField(source='task.is_required')
@@ -110,9 +115,10 @@ class StudentSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
-    group = serializers.StringRelatedField()
-    task_statuses = StudentTaskStatusSerializer(many=True)
+    level = LevelField(choices=models.Student.Level.choices)
     assessment = AssessmentField(read_only=True)
+    task_statuses = StudentTaskStatusSerializer(many=True)
+    group = serializers.StringRelatedField()
 
     class Meta:
         model = models.Student
@@ -150,6 +156,7 @@ class GroupTaskStatusSerializer(serializers.ModelSerializer):
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    level = LevelField(choices=models.Group.Level.choices)
     task_statuses = GroupTaskStatusSerializer(many=True)
     students = StudentSerializer(many=True, read_only=True)
 
@@ -178,8 +185,9 @@ class MissionField(serializers.RelatedField):
 
 
 class ClassYearSerializer(serializers.ModelSerializer):
-    tasks = ClassYearTaskSerializer(many=True, read_only=True)
+    level = LevelField(choices=models.ClassYear.Level.choices)
     missions = MissionField(many=True, read_only=True)
+    tasks = ClassYearTaskSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.ClassYear

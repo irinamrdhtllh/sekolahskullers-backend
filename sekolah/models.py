@@ -36,11 +36,16 @@ class Student(models.Model):
         ordering = ['user__username']
 
     class Level(models.IntegerChoices):
-        LEVEL1 = 1, 'Level 1'
-        LEVEL2 = 2, 'Level 2'
-        LEVEL3 = 3, 'Level 3'
+        LEVEL1 = 1, 'Landlubber'
+        LEVEL2 = 2, 'Powderboy'
+        LEVEL3 = 3, 'Gunner'
+        LEVEL4 = 4, 'Corsair'
+        LEVEL5 = 5, 'Boatswain'
+        LEVEL6 = 6, 'Quartermaster'
+        LEVEL7 = 7, 'First Mate'
+        LEVEL8 = 8, 'Captain'
 
-    MILESTONES = [0, 1000, 2000, 3000]
+    MILESTONES = [0, 700, 1600, 2500, 3600, 4700, 5800, 6900]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     health = models.IntegerField(default=100)
@@ -57,11 +62,19 @@ class Student(models.Model):
     def __str__(self):
         return f'{self.user.get_username()} - {self.user.get_full_name()}'
 
-    def update_level(self):
+    def update_level(self, level=None):
         """
         Menentukan level berdasarkan batas nilai exp. Contoh: Jika exp berada di dalam
         rentang 1000 <= exp < 2000 maka level menjadi Level 2.
         """
+        if self.level == self.Level.values[-1]:
+            return
+
+        if level:
+            self.level = level
+            self.exp = self.MILESTONES[level - 1]
+            return
+
         for i in range(len(self.Level.values)):
             if self.exp >= self.MILESTONES[i] and self.exp < self.MILESTONES[i + 1]:
                 self.level = self.Level.values[i]
@@ -145,11 +158,13 @@ class Group(models.Model):
         ordering = ['name']
 
     class Level(models.IntegerChoices):
-        LEVEL1 = 1, 'Level 1'
-        LEVEL2 = 2, 'Level 2'
-        LEVEL3 = 3, 'Level 3'
+        LEVEL1 = 1, 'Sloop'
+        LEVEL2 = 2, 'Brigantine'
+        LEVEL3 = 3, 'Galleon'
+        LEVEL4 = 4, 'Man o\' War'
+        LEVEL5 = 5, 'Ship of the Line'
 
-    MILESTONES = [0, 1000, 2000, 3000]
+    MILESTONES = [0, 150, 500, 1000, 1500, 2000]
 
     name = models.CharField(max_length=25)
     health = models.IntegerField(default=100)
@@ -159,7 +174,15 @@ class Group(models.Model):
     def __str__(self):
         return self.name
 
-    def update_level(self):
+    def update_level(self, level=None):
+        if self.level == self.Level.values[-1]:
+            return
+
+        if level:
+            self.level = level
+            self.exp = self.MILESTONES[level - 1]
+            return
+
         for i in range(len(self.Level.values)):
             if self.exp >= self.MILESTONES[i] and self.exp < self.MILESTONES[i + 1]:
                 self.level = self.Level.values[i]
@@ -243,11 +266,12 @@ class Mission(models.Model):
 
 class ClassYear(models.Model):
     class Level(models.IntegerChoices):
-        LEVEL1 = 1, 'Level 1'
-        LEVEL2 = 2, 'Level 2'
-        LEVEL3 = 3, 'Level 3'
+        LEVEL1 = 1, 'Flotilla'
+        LEVEL2 = 2, 'Cavalcade'
+        LEVEL3 = 3, 'Fleet'
+        LEVEL4 = 4, 'Armada'
 
-    MILESTONES = [0, 1000, 2000, 3000]
+    MILESTONES = [0, 1000, 2000, 3000, 4000]
 
     name = models.CharField(max_length=25)
     health = models.IntegerField(default=100)
@@ -258,7 +282,15 @@ class ClassYear(models.Model):
     def __str__(self):
         return self.name
 
-    def update_level(self):
+    def update_level(self, level=None):
+        if self.level == self.Level.values[-1]:
+            return
+
+        if level:
+            self.level = level
+            self.exp = self.MILESTONES[level - 1]
+            return
+
         for i in range(len(self.Level.values)):
             if self.exp >= self.MILESTONES[i] and self.exp < self.MILESTONES[i + 1]:
                 self.level = self.Level.values[i]

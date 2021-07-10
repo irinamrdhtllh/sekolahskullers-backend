@@ -13,16 +13,30 @@ def create_student(username='user', **kwargs):
 
 class StudentModelTests(TestCase):
     def test_update_level(self):
-        student1 = create_student(username='1', exp=500)
-        student2 = create_student(username='2', exp=1200)
-        student3 = create_student(username='3', exp=2300)
+        student1 = create_student(username='1', exp=300)
+        student2 = create_student(username='2', exp=800)
+        student3 = create_student(username='3', exp=1700)
 
         self.assertIs(student1.level, models.Student.Level.LEVEL1.value)
         self.assertIs(student2.level, models.Student.Level.LEVEL2.value)
         self.assertIs(student3.level, models.Student.Level.LEVEL3.value)
 
+    def test_update_level_assign(self):
+        student = create_student()
+
+        student.update_level(4)
+
+        self.assertIs(student.level, models.Student.Level.LEVEL4.value)
+
+    def test_max_level(self):
+        student = create_student(level=8)
+
+        student.update_level()
+
+        self.assertIs(student.level, models.Student.Level.LEVEL8.value)
+
     def test_relative_exp(self):
-        student = create_student(exp=1500)
+        student = create_student(exp=3050)
 
         self.assertAlmostEqual(student.relative_exp(), 50.0)
 
@@ -55,16 +69,30 @@ class StudentTaskModelTests(TestCase):
 
 class GroupModelTests(TestCase):
     def test_update_level(self):
-        group1 = models.Group.objects.create(name='1', exp=500)
-        group2 = models.Group.objects.create(name='2', exp=1200)
-        group3 = models.Group.objects.create(name='3', exp=2300)
+        group1 = models.Group.objects.create(name='1', exp=100)
+        group2 = models.Group.objects.create(name='2', exp=200)
+        group3 = models.Group.objects.create(name='3', exp=700)
 
         self.assertIs(group1.level, models.Group.Level.LEVEL1.value)
         self.assertIs(group2.level, models.Group.Level.LEVEL2.value)
         self.assertIs(group3.level, models.Group.Level.LEVEL3.value)
 
+    def test_update_level_assign(self):
+        group = models.Group.objects.create()
+
+        group.update_level(4)
+
+        self.assertIs(group.level, models.Group.Level.LEVEL4.value)
+
+    def test_max_level(self):
+        group = models.Group.objects.create(level=5)
+
+        group.update_level()
+
+        self.assertIs(group.level, models.Group.Level.LEVEL5.value)
+
     def test_relative_exp(self):
-        group = models.Group.objects.create(exp=1500)
+        group = models.Group.objects.create(exp=750)
 
         self.assertAlmostEqual(group.relative_exp(), 50.0)
 
@@ -98,15 +126,29 @@ class GroupTaskModelTests(TestCase):
 class ClassYearModelTests(TestCase):
     def test_update_level(self):
         class_year1 = models.ClassYear.objects.create(name='1', exp=500)
-        class_year2 = models.ClassYear.objects.create(name='2', exp=1200)
-        class_year3 = models.ClassYear.objects.create(name='3', exp=2300)
+        class_year2 = models.ClassYear.objects.create(name='2', exp=1500)
+        class_year3 = models.ClassYear.objects.create(name='3', exp=2500)
 
         self.assertIs(class_year1.level, models.ClassYear.Level.LEVEL1.value)
         self.assertIs(class_year2.level, models.ClassYear.Level.LEVEL2.value)
         self.assertIs(class_year3.level, models.ClassYear.Level.LEVEL3.value)
 
+    def test_update_level_assign(self):
+        class_year = models.ClassYear.objects.create()
+
+        class_year.update_level(2)
+
+        self.assertIs(class_year.level, models.ClassYear.Level.LEVEL2.value)
+
+    def test_max_level(self):
+        class_year = models.ClassYear.objects.create(level=4)
+
+        class_year.update_level()
+
+        self.assertIs(class_year.level, models.ClassYear.Level.LEVEL4.value)
+
     def test_relative_exp(self):
-        class_year = models.ClassYear.objects.create(exp=1500)
+        class_year = models.ClassYear.objects.create(exp=2500)
 
         self.assertAlmostEqual(class_year.relative_exp(), 50.0)
 

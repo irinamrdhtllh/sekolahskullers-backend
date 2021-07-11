@@ -11,5 +11,5 @@ class Command(BaseCommand):
         LogEntry.objects.all().delete()
 
         self.stdout.write(
-            f'Successfully cleared {count} recent action' + ('' if count == 1 else 's')
+            f'Successfully cleared {count} recent action' + ('' if count <= 1 else 's')
         )

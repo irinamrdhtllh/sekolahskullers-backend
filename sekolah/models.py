@@ -52,6 +52,7 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     health = models.IntegerField(default=100)
     exp = models.IntegerField(verbose_name='experience', default=0)
+    weekly_exp = models.IntegerField(verbose_name='weekly experience', default=0)
     level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
     group = models.ForeignKey(
         'Group',
@@ -115,6 +116,7 @@ class Student(models.Model):
         status.score = score
         status.save(commit=False)
         self.exp += int(score)
+        self.weekly_exp += int(score)
         self.save()
 
 
@@ -187,6 +189,7 @@ class Group(models.Model):
     name = models.CharField(max_length=25)
     health = models.IntegerField(default=100)
     exp = models.IntegerField(verbose_name='experience', default=0)
+    weekly_exp = models.IntegerField(verbose_name='weekly experience', default=0)
     level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
 
     def __str__(self):
@@ -232,6 +235,7 @@ class Group(models.Model):
         status.score = score
         status.save(commit=False)
         self.exp += int(score)
+        self.weekly_exp += int(score)
         self.save()
 
 

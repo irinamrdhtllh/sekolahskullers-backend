@@ -38,7 +38,7 @@ def upload(request, action=''):
             if created:
                 user.first_name = column[1]
                 user.last_name = column[2]
-                user.email = f'{column[1]}@skullers.com'
+                user.email = f'{column[1].lower()}@skullers.com'
                 user.set_password(column[0])
                 user.save()
                 Student.objects.create(user=user)

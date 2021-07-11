@@ -38,6 +38,8 @@ class StudentAdmin(admin.ModelAdmin):
         StudentTaskStatusInline,
     )
     list_display = ('username', 'full_name', 'health', 'exp', 'level')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name')
+    save_on_top = True
 
     @admin.display(ordering='user__username')
     def username(self, student):
@@ -57,37 +59,15 @@ class StudentTaskAdmin(admin.ModelAdmin):
     exclude = ('students',)
     ordering = ('deadline', 'is_required')
     list_display = ('name', 'required_status', 'deadline', 'max_score')
+    save_on_top = True
 
     @admin.display(boolean=True, ordering='is_required', description='Required Status')
     def required_status(self, task):
         return task.is_required
 
 
-class StudentTaskStatusAdmin(admin.ModelAdmin):
-    ordering = ('is_complete', 'student__user__username')
-    list_display = ('username', 'full_name', 'task_name', 'complete_status', 'score')
-    raw_id_fields = ('student',)
-
-    @admin.display(ordering='student__user__username')
-    def username(self, taskstatus):
-        return taskstatus.student.user.get_username()
-
-    @admin.display(ordering='student__user__first_name')
-    def full_name(self, taskstatus):
-        return taskstatus.student.user.get_full_name()
-
-    @admin.display(ordering='task__name', description='Task')
-    def task_name(self, taskstatus):
-        return taskstatus.task.name
-
-    @admin.display(boolean=True, ordering='is_complete', description='Complete Status')
-    def complete_status(self, taskstatus):
-        return taskstatus.is_complete
-
-
 admin.site.register(models.Student, StudentAdmin)
 admin.site.register(models.StudentTask, StudentTaskAdmin)
-admin.site.register(models.StudentTaskStatus, StudentTaskStatusAdmin)
 
 
 ### Group ###
@@ -108,6 +88,7 @@ class GroupAdmin(admin.ModelAdmin):
         GroupTaskStatusInline,
     )
     list_display = ('name', 'health', 'exp', 'level')
+    save_on_top = True
 
 
 class GroupTaskAdmin(admin.ModelAdmin):
@@ -115,33 +96,15 @@ class GroupTaskAdmin(admin.ModelAdmin):
     exclude = ('groups',)
     ordering = ('deadline', 'is_required')
     list_display = ('name', 'required_status', 'deadline', 'max_score')
+    save_on_top = True
 
     @admin.display(boolean=True, ordering='is_required', description='Required Status')
     def required_status(self, task):
         return task.is_required
 
 
-class GroupTaskStatusAdmin(admin.ModelAdmin):
-    ordering = ('is_complete', 'group__name')
-    list_display = ('group_name', 'task_name', 'complete_status', 'score')
-    raw_id_fields = ('group',)
-
-    @admin.display(ordering='group__name', description='Name')
-    def group_name(self, taskstatus):
-        return taskstatus.group.name
-
-    @admin.display(ordering='task__name', description='Task')
-    def task_name(self, taskstatus):
-        return taskstatus.task.name
-
-    @admin.display(boolean=True, ordering='is_complete', description='Complete Status')
-    def complete_status(self, taskstatus):
-        return taskstatus.is_complete
-
-
 admin.site.register(models.Group, GroupAdmin)
 admin.site.register(models.GroupTask, GroupTaskAdmin)
-admin.site.register(models.GroupTaskStatus, GroupTaskStatusAdmin)
 
 
 ### Class Year ###
@@ -155,6 +118,7 @@ class MissionInline(admin.StackedInline):
 class ClassYearAdmin(admin.ModelAdmin):
     inlines = (MissionInline,)
     list_display = ('name', 'health', 'exp', 'level')
+    save_on_top = True
 
 
 class ClassYearTaskAdmin(admin.ModelAdmin):
@@ -181,6 +145,7 @@ class ClassYearTaskAdmin(admin.ModelAdmin):
             },
         ),
     )
+    save_on_top = True
 
     @admin.display(boolean=True, ordering='is_required', description='Required Status')
     def required_status(self, task):

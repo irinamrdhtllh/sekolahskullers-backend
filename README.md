@@ -31,9 +31,15 @@ Jalankan server
 
 Laman admin dapat diakses pada endpoint `/admin/`
 
+<p style="text-align: center">
+  <img src="./docs/admin_site.jpeg" width="1024">
+</p>
+
+> **PENTING** Jangan tambahkan peserta atau kelas baru setelah terdapat tugas peserta atau tugas kelas yang telah dibuat.
+
 ## Petunjuk REST API
 
-Berikut daftar endpoint REST API yang dapat diakses dengan mengirim request ke rute yang diinginkan dengan metode yang sesuai (GET, POST, dsb). Untuk testing dapat menggunakan extension [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) pada Visual Studio Code. Beberapa contoh request terdapat pada file `client.http`
+Berikut daftar endpoint REST API yang dapat diakses dengan mengirim request ke rute yang diinginkan dengan metode yang sesuai (GET atau POST). Untuk testing dapat menggunakan extension [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) pada Visual Studio Code. Beberapa contoh request terdapat pada file `client.http`
 
 - `GET /api/` : Daftar seluruh endpoint
 - `GET /api/students/` : List seluruh peserta

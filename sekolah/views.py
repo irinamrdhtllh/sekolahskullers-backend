@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
 
-from .models import Student, Task
+from .models import Student, Group
 
 
 @staff_member_required()
@@ -16,10 +16,10 @@ def upload(request, action=''):
     `action` dengan format header untuk masing-masing sebagai berikut:
 
     `student`
-        Membuat Student baru. [nim, nama depan, nama belakang]
+        Membuat Student baru (hanya untuk percobaan). [nim, nama depan, nama belakang]
 
-    `assign`
-        Menambahkan Student ke Task yang diberikan. [nim, nama task]
+    `group`
+        Menambahkan Student ke Group. [nim, nama group]
 
     `complete`
         Menyelesaikan Task dan memberi skor. [nim, nama task, skor]
@@ -43,10 +43,11 @@ def upload(request, action=''):
                 user.save()
                 Student.objects.create(user=user)
 
-        elif action == 'assign':
+        elif action == 'group':
+            group, _ = Group.objects.get_or_create(name=column[1])
             user = get_object_or_404(User, username=column[0])
-            task = get_object_or_404(Task, name=column[1])
-            task.assign(user.student)
+            user.student.group = group
+            user.student.save()
 
         elif action == 'complete':
             user = get_object_or_404(User, username=column[0])

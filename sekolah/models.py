@@ -34,6 +34,8 @@ class Assessment(models.Model):
 class Student(models.Model):
     class Meta:
         ordering = ['user__username']
+        verbose_name = 'peserta'
+        verbose_name_plural = 'peserta'
 
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Landlubber'
@@ -117,6 +119,10 @@ class Student(models.Model):
 
 
 class StudentTask(Task):
+    class Meta:
+        verbose_name = 'tugas peserta'
+        verbose_name_plural = 'tugas peserta'
+
     students = models.ManyToManyField(
         Student, related_name='tasks', through='StudentTaskStatus'
     )
@@ -131,6 +137,10 @@ class StudentTask(Task):
 
 
 class StudentTaskStatus(models.Model):
+    class Meta:
+        verbose_name = 'status tugas peserta'
+        verbose_name_plural = 'status tugas peserta'
+
     student = models.ForeignKey(
         Student, related_name='task_statuses', on_delete=models.CASCADE
     )
@@ -139,10 +149,6 @@ class StudentTaskStatus(models.Model):
     )
     is_complete = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name = 'student task status'
-        verbose_name_plural = 'student task statuses'
 
     def __str__(self):
         return f'{self.student.user.get_username()} - {self.task.name}'
@@ -156,6 +162,8 @@ class StudentTaskStatus(models.Model):
 class Group(models.Model):
     class Meta:
         ordering = ['name']
+        verbose_name = 'kelas'
+        verbose_name_plural = 'kelas'
 
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Sloop'
@@ -218,6 +226,10 @@ class Group(models.Model):
 
 
 class GroupTask(Task):
+    class Meta:
+        verbose_name = 'tugas kelas'
+        verbose_name_plural = 'tugas kelas'
+
     groups = models.ManyToManyField(
         Group, related_name='tasks', through='GroupTaskStatus'
     )
@@ -232,6 +244,10 @@ class GroupTask(Task):
 
 
 class GroupTaskStatus(models.Model):
+    class Meta:
+        verbose_name = 'status tugas kelas'
+        verbose_name_plural = 'status tugas kelas'
+
     group = models.ForeignKey(
         Group, related_name='task_statuses', on_delete=models.CASCADE
     )
@@ -240,10 +256,6 @@ class GroupTaskStatus(models.Model):
     )
     is_complete = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name = 'group task status'
-        verbose_name_plural = 'group task statuses'
 
     def __str__(self):
         return f'{self.group.name} - {self.task.name}'
@@ -265,6 +277,10 @@ class Mission(models.Model):
 
 
 class ClassYear(models.Model):
+    class Meta:
+        verbose_name = 'angkatan'
+        verbose_name_plural = 'angkatan'
+
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Flotilla'
         LEVEL2 = 2, 'Cavalcade'
@@ -325,15 +341,15 @@ class ClassYear(models.Model):
 
 
 class ClassYearTask(Task):
+    class Meta:
+        verbose_name = 'tugas angkatan'
+        verbose_name_plural = 'tugas angkatan'
+
     class_year = models.ForeignKey(
         ClassYear, related_name='tasks', on_delete=models.CASCADE
     )
     is_complete = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name = 'class year task status'
-        verbose_name_plural = 'class year task statuses'
 
     def save(self, commit=True, *args, **kwargs):
         if not self.is_complete and self.score != 0:

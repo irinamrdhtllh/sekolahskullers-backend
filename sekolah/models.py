@@ -90,7 +90,7 @@ class Student(models.Model):
             if self.level == self.Level.values[i]:
                 low = self.MILESTONES[i]
                 high = self.MILESTONES[i + 1]
-                return 100 * (self.exp - low) / (high - low)
+                return round(100 * (self.exp - low) / (high - low), 3)
 
     def is_alive(self):
         """
@@ -210,7 +210,7 @@ class Group(models.Model):
             if self.level == self.Level.values[i]:
                 low = self.MILESTONES[i]
                 high = self.MILESTONES[i + 1]
-                return 100 * (self.exp - low) / (high - low)
+                return round(100 * (self.exp - low) / (high - low), 3)
 
     def is_alive(self):
         if self.health > 0:
@@ -336,7 +336,7 @@ class ClassYear(models.Model):
             if self.level == self.Level.values[i]:
                 low = self.MILESTONES[i]
                 high = self.MILESTONES[i + 1]
-                return 100 * (self.exp - low) / (high - low)
+                return round(100 * (self.exp - low) / (high - low), 3)
 
     def is_alive(self):
         if self.health > 0:

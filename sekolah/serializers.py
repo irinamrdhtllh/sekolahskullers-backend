@@ -115,6 +115,7 @@ class StudentSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
+    relative_exp = serializers.SerializerMethodField()
     level = LevelField(choices=models.Student.Level.choices)
     assessment = AssessmentField(read_only=True)
     task_statuses = StudentTaskStatusSerializer(many=True)
@@ -128,11 +129,15 @@ class StudentSerializer(serializers.ModelSerializer):
             'last_name',
             'health',
             'exp',
+            'relative_exp',
             'level',
             'assessment',
             'task_statuses',
             'group',
         ]
+
+    def get_relative_exp(self, student):
+        return student.relative_exp()
 
 
 class GroupTaskStatusSerializer(serializers.ModelSerializer):
@@ -157,12 +162,24 @@ class GroupTaskStatusSerializer(serializers.ModelSerializer):
 
 class GroupSerializer(serializers.ModelSerializer):
     level = LevelField(choices=models.Group.Level.choices)
+    relative_exp = serializers.SerializerMethodField()
     task_statuses = GroupTaskStatusSerializer(many=True)
     students = StudentSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Group
-        fields = ['name', 'health', 'exp', 'level', 'task_statuses', 'students']
+        fields = [
+            'name',
+            'health',
+            'exp',
+            'relative_exp',
+            'level',
+            'task_statuses',
+            'students',
+        ]
+
+    def get_relative_exp(self, group):
+        return group.relative_exp()
 
 
 class ClassYearTaskSerializer(serializers.ModelSerializer):
@@ -186,9 +203,22 @@ class MissionField(serializers.RelatedField):
 
 class ClassYearSerializer(serializers.ModelSerializer):
     level = LevelField(choices=models.ClassYear.Level.choices)
+    relative_exp = serializers.SerializerMethodField()
     missions = MissionField(many=True, read_only=True)
     tasks = ClassYearTaskSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.ClassYear
-        fields = ['name', 'health', 'exp', 'level', 'vision', 'missions', 'tasks']
+        fields = [
+            'name',
+            'health',
+            'exp',
+            'relative_exp',
+            'level',
+            'vision',
+            'missions',
+            'tasks',
+        ]
+
+    def get_relative_exp(self, class_year):
+        return class_year.relative_exp()

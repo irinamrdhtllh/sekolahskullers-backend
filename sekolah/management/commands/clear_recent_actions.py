@@ -7,10 +7,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         count = LogEntry.objects.count()
-        plural = count == 1 if True else False
 
         LogEntry.objects.all().delete()
 
         self.stdout.write(
-            f'Successfully cleared {count} recent action' + ('s' if plural else '')
+            f'Successfully cleared {count} recent action' + ('' if count == 1 else 's')
         )

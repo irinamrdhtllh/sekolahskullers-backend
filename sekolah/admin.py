@@ -11,14 +11,25 @@ admin.site.unregister(AdminGroup)
 
 class AssessmentInline(admin.StackedInline):
     model = models.Assessment
+    extra = 1
 
 
 class StudentInline(admin.TabularInline):
     model = models.Student
+    extra = 1
+    raw_id_fields = ('user',)
+
+    def has_add_permission(self, request, obj):
+        return False
 
 
 class StudentTaskStatusInline(admin.TabularInline):
     model = models.StudentTask.students.through
+    extra = 1
+    raw_id_fields = ('task',)
+
+    def has_add_permission(self, request, obj):
+        return False
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -55,6 +66,7 @@ class StudentTaskAdmin(admin.ModelAdmin):
 class StudentTaskStatusAdmin(admin.ModelAdmin):
     ordering = ('is_complete', 'student__user__username')
     list_display = ('username', 'full_name', 'task_name', 'complete_status', 'score')
+    raw_id_fields = ('student',)
 
     @admin.display(ordering='student__user__username')
     def username(self, taskstatus):
@@ -83,12 +95,17 @@ admin.site.register(models.StudentTaskStatus, StudentTaskStatusAdmin)
 
 class GroupTaskStatusInline(admin.TabularInline):
     model = models.GroupTask.groups.through
+    extra = 1
+    raw_id_fields = ('group', 'task')
+
+    def has_add_permission(self, request, obj):
+        return False
 
 
 class GroupAdmin(admin.ModelAdmin):
     inlines = (
-        GroupTaskStatusInline,
         StudentInline,
+        GroupTaskStatusInline,
     )
     list_display = ('name', 'health', 'exp', 'level')
 
@@ -107,6 +124,7 @@ class GroupTaskAdmin(admin.ModelAdmin):
 class GroupTaskStatusAdmin(admin.ModelAdmin):
     ordering = ('is_complete', 'group__name')
     list_display = ('group_name', 'task_name', 'complete_status', 'score')
+    raw_id_fields = ('group',)
 
     @admin.display(ordering='group__name', description='Name')
     def group_name(self, taskstatus):
@@ -131,6 +149,7 @@ admin.site.register(models.GroupTaskStatus, GroupTaskStatusAdmin)
 
 class MissionInline(admin.StackedInline):
     model = models.Mission
+    extra = 1
 
 
 class ClassYearAdmin(admin.ModelAdmin):
@@ -152,13 +171,13 @@ class ClassYearTaskAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ('name', 'is_required', 'deadline', 'max_score'),
+                'fields': ('name', 'is_required', 'deadline', 'max_score'),
             },
         ),
         (
-            'Task status',
+            'STATUS TUGAS ANGKATAN',
             {
-                "fields": ('class_year', 'is_complete', 'score'),
+                'fields': ('class_year', 'is_complete', 'score'),
             },
         ),
     )

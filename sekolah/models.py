@@ -131,9 +131,19 @@ class StudentTask(Task):
         """
         Menambahkan Student ke Task yang diberikan.
         """
-        self.save()
+        self.save(commit=False)
         self.students.add(student)
         StudentTaskStatus.objects.get_or_create(student=student, task=self)
+
+    def save(self, commit=True, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Auto assign all students
+        if commit:
+            students = Student.objects.all()
+            for student in students:
+                if not self.students.filter(user__username=student.user.get_username()):
+                    self.assign(student)
 
 
 class StudentTaskStatus(models.Model):
@@ -238,9 +248,19 @@ class GroupTask(Task):
         """
         Menambahkan Group ke Task yang diberikan.
         """
-        self.save()
+        self.save(commit=False)
         self.groups.add(group)
         GroupTaskStatus.objects.get_or_create(group=group, task=self)
+
+    def save(self, commit=True, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # Auto assign all groups
+        if commit:
+            groups = Group.objects.all()
+            for group in groups:
+                if not self.groups.filter(name=group.name):
+                    self.assign(group)
 
 
 class GroupTaskStatus(models.Model):

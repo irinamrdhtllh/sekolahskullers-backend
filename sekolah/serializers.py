@@ -24,6 +24,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
         write_only_fields = ['password', 'password2']
 
+    def validate_email(self, email):
+        try:
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            return email
+
+        raise serializers.ValidationError('Email address is already in use')
+
     def validate(self, data):
         password1 = data['password']
         password2 = data.pop('password2')

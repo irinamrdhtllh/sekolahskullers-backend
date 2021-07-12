@@ -10,3 +10,6 @@ db.sqlite3
 
 # Editor settings
 .vscode
+
+# Environment variables
+.env

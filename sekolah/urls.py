@@ -28,4 +28,14 @@ urlpatterns += [
     path('api/token/', auth_views.Login.as_view(), name='login'),
     path('api/token/refresh/', auth_views.RefreshToken.as_view(), name='refresh'),
     path('api/token/logout/', auth_views.Logout.as_view(), name='logout'),
+    path(
+        'api/password/reset/',
+        auth_views.PasswordResetView.as_view(),
+        name='password_reset',
+    ),
+    path(
+        'api/password/reset/confirm/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirm.as_view(),
+        name='password_reset_confirm',
+    ),
 ]

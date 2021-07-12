@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 
-from . import models, serializers
+from . import models, api_serializers
 
 
 @api_view(['GET'])
@@ -26,18 +26,18 @@ def api_root(request, format=None):
 
 class StudentView(generics.ListAPIView):
     queryset = models.Student.objects.all()
-    serializer_class = serializers.StudentSerializer
+    serializer_class = api_serializers.StudentSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class GroupView(generics.ListAPIView):
     queryset = models.Group.objects.all()
-    serializer_class = serializers.GroupSerializer
+    serializer_class = api_serializers.GroupSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class ClassYearView(generics.RetrieveAPIView):
-    serializer_class = serializers.ClassYearSerializer
+    serializer_class = api_serializers.ClassYearSerializer
     permission_classes = [permissions.AllowAny]
 
     def get_object(self):
@@ -45,7 +45,7 @@ class ClassYearView(generics.RetrieveAPIView):
 
 
 class ProfileView(generics.RetrieveAPIView):
-    serializer_class = serializers.StudentSerializer
+    serializer_class = api_serializers.StudentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -53,7 +53,7 @@ class ProfileView(generics.RetrieveAPIView):
 
 
 class GroupProfileView(generics.RetrieveAPIView):
-    serializer_class = serializers.GroupSerializer
+    serializer_class = api_serializers.GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):

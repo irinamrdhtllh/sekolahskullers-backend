@@ -28,11 +28,6 @@ class RefreshTokenView(TokenViewBase):
     serializer_class = serializers.RefreshTokenSerializer
 
 
-class LogoutView(APIView):
-    def post(self, *args, **kwargs):
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
-
-
 class PasswordResetView(GenericAPIView):
     serializer_class = serializers.PasswordResetSerializer
     permission_classes = (AllowAny,)

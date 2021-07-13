@@ -181,7 +181,7 @@ class Group(models.Model):
         LEVEL1 = 1, 'Sloop'
         LEVEL2 = 2, 'Brigantine'
         LEVEL3 = 3, 'Galleon'
-        LEVEL4 = 4, 'Man o\' War'
+        LEVEL4 = 4, "Man o' War"
         LEVEL5 = 5, 'Ship of the Line'
 
     MILESTONES = [0, 150, 500, 1000, 1500, 2000]

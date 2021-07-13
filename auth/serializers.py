@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt import serializers as jwt_serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from . import models
+from sekolah import models
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         password1 = data['password']
         password2 = data.pop('password2')
         if password1 and password2 and password1 != password2:
-            raise serializers.ValidationError({'password': 'Password doesn\'t match'})
+            raise serializers.ValidationError({'password': "Password doesn't match"})
         return super().validate(data)
 
     def create(self, validated_data):
@@ -52,7 +52,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class TokenObtainPairSerializer(jwt_serializers.TokenObtainPairSerializer):
+class LoginSerializer(jwt_serializers.TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -75,7 +75,7 @@ class TokenObtainPairSerializer(jwt_serializers.TokenObtainPairSerializer):
         return data
 
 
-class TokenRefreshSerializer(jwt_serializers.TokenRefreshSerializer):
+class RefreshTokenSerializer(jwt_serializers.TokenRefreshSerializer):
     def validate(self, attrs):
         refresh = RefreshToken(attrs['refresh'])
 

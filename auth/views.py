@@ -6,35 +6,35 @@ from rest_framework.permissions import AllowAny
 
 from rest_framework_simplejwt.views import TokenViewBase
 
-from . import auth_serializers
+from . import serializers
 
 
-class Register(TokenViewBase):
-    serializer_class = auth_serializers.TokenObtainPairSerializer
+class RegisterView(TokenViewBase):
+    serializer_class = serializers.LoginSerializer
 
     def post(self, request, format=None):
-        register_serializer = auth_serializers.RegisterSerializer(data=request.data)
+        register_serializer = serializers.RegisterSerializer(data=request.data)
         register_serializer.is_valid(raise_exception=True)
         register_serializer.save()
 
         return super().post(request, format=format)
 
 
-class Login(TokenViewBase):
-    serializer_class = auth_serializers.TokenObtainPairSerializer
+class LoginView(TokenViewBase):
+    serializer_class = serializers.LoginSerializer
 
 
-class RefreshToken(TokenViewBase):
-    serializer_class = auth_serializers.TokenRefreshSerializer
+class RefreshTokenView(TokenViewBase):
+    serializer_class = serializers.RefreshTokenSerializer
 
 
-class Logout(APIView):
+class LogoutView(APIView):
     def post(self, *args, **kwargs):
-        return Response({})
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
 class PasswordResetView(GenericAPIView):
-    serializer_class = auth_serializers.PasswordResetSerializer
+    serializer_class = serializers.PasswordResetSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -49,8 +49,8 @@ class PasswordResetView(GenericAPIView):
         )
 
 
-class PasswordResetConfirm(GenericAPIView):
-    serializer_class = auth_serializers.PasswordResetConfirmSerializer
+class PasswordResetConfirmView(GenericAPIView):
+    serializer_class = serializers.PasswordResetConfirmSerializer
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -59,6 +59,6 @@ class PasswordResetConfirm(GenericAPIView):
         serializer.save()
         return Response(
             {
-                'detail': 'Password has been reset with the new password',
+                'detail': 'Password has been reset successfully',
             }
         )

@@ -1,56 +1,60 @@
-import csv, io
-
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.shortcuts import get_object_or_404, render
-
-from .models import Student, Group
+from rest_framework import permissions, generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 
-@staff_member_required()
-def upload(request, action=''):
-    """
-    Menambahkan data dari file CSV yang diupload oleh admin. Terdapat tiga jenis
-    `action` dengan format header untuk masing-masing sebagai berikut:
+from . import models, serializers
 
-    `student`
-        Membuat Student baru (hanya untuk percobaan). [nim, nama depan, nama belakang]
 
-    `group`
-        Menambahkan Student ke Group. [nim, nama group]
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response(
+        {
+            'students': reverse('students', request=request, format=format),
+            'groups': reverse('groups', request=request, format=format),
+            'class-year': reverse('class_year', request=request, format=format),
+            'profile': reverse('profile', request=request, format=format),
+            'group_profile': reverse('group_profile', request=request, format=format),
+            'register': reverse('register', request=request, format=format),
+            'login': reverse('login', request=request, format=format),
+            'refresh': reverse('refresh', request=request, format=format),
+            'logout': reverse('logout', request=request, format=format),
+        }
+    )
 
-    `complete`
-        Menyelesaikan Task dan memberi skor. [nim, nama task, skor]
-    """
-    if request.method == 'GET':
-        return render(request, 'upload.html', {'action': action})
 
-    file = request.FILES['file']
-    data = file.read().decode('UTF-8')
-    io_string = io.StringIO(data)
-    next(io_string)
+class StudentView(generics.ListAPIView):
+    queryset = models.Student.objects.all()
+    serializer_class = serializers.StudentSerializer
+    permission_classes = [permissions.AllowAny]
 
-    for column in csv.reader(io_string):
-        if action == 'student':
-            user, created = User.objects.get_or_create(username=column[0])
-            if created:
-                user.first_name = column[1]
-                user.last_name = column[2]
-                user.email = f'{column[1].lower()}@skullers.com'
-                user.set_password(column[0])
-                user.save()
-                Student.objects.create(user=user)
 
-        elif action == 'group':
-            group, _ = Group.objects.get_or_create(name=column[1])
-            user = get_object_or_404(User, username=column[0])
-            user.student.group = group
-            user.student.save()
+class GroupView(generics.ListAPIView):
+    queryset = models.Group.objects.all()
+    serializer_class = serializers.GroupSerializer
+    permission_classes = [permissions.AllowAny]
 
-        elif action == 'complete':
-            user = get_object_or_404(User, username=column[0])
-            user.student.complete_task(column[1], column[2])
 
-    return HttpResponseRedirect(reverse('upload'))
+class ClassYearView(generics.RetrieveAPIView):
+    serializer_class = serializers.ClassYearSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_object(self):
+        return models.ClassYear.objects.get(pk=1)
+
+
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = serializers.StudentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.student
+
+
+class GroupProfileView(generics.RetrieveAPIView):
+    serializer_class = serializers.GroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.student.group

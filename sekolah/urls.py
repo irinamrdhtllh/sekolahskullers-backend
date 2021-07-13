@@ -1,41 +1,19 @@
-from django.urls import include, path
-from django.views.generic.base import RedirectView
+from django.urls import path
 
-from . import views, api_views, auth_views
+from . import views, upload_views
 
+# Upload view
 urlpatterns = [
-    path('', RedirectView.as_view(url='api/')),
-    path('api-auth/', include('rest_framework.urls')),
-    path('upload/', views.upload, name='upload'),
-    path('upload/<action>/', views.upload),
+    path('upload/', upload_views.upload, name='upload'),
+    path('upload/<action>/', upload_views.upload),
 ]
 
 # API views
 urlpatterns += [
-    path('api/', api_views.api_root, name='api_root'),
-    path('api/students/', api_views.StudentView.as_view(), name='students'),
-    path('api/groups/', api_views.GroupView.as_view(), name='groups'),
-    path('api/class-year/', api_views.ClassYearView.as_view(), name='class_year'),
-    path('api/profile/', api_views.ProfileView.as_view(), name='profile'),
-    path(
-        'api/profile/group/', api_views.GroupProfileView.as_view(), name='group_profile'
-    ),
-]
-
-# Auth views
-urlpatterns += [
-    path('api/register/', auth_views.Register.as_view(), name='register'),
-    path('api/token/', auth_views.Login.as_view(), name='login'),
-    path('api/token/refresh/', auth_views.RefreshToken.as_view(), name='refresh'),
-    path('api/token/logout/', auth_views.Logout.as_view(), name='logout'),
-    path(
-        'api/password/reset/',
-        auth_views.PasswordResetView.as_view(),
-        name='password_reset',
-    ),
-    path(
-        'api/password/reset/confirm/<uidb64>/<token>/',
-        auth_views.PasswordResetConfirm.as_view(),
-        name='password_reset_confirm',
-    ),
+    path('', views.api_root, name='api_root'),
+    path('students/', views.StudentView.as_view(), name='students'),
+    path('groups/', views.GroupView.as_view(), name='groups'),
+    path('class-year/', views.ClassYearView.as_view(), name='class_year'),
+    path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('profile-group/', views.GroupProfileView.as_view(), name='group_profile'),
 ]

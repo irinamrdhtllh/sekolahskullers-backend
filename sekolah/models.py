@@ -40,10 +40,10 @@ class Student(models.Model):
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Landlubber'
         LEVEL2 = 2, 'Powderboy'
-        LEVEL3 = 3, 'Gunner'
-        LEVEL4 = 4, 'Corsair'
-        LEVEL5 = 5, 'Boatswain'
-        LEVEL6 = 6, 'Quartermaster'
+        LEVEL3 = 3, 'Guncrew'
+        LEVEL4 = 4, 'Master Gunner'
+        LEVEL5 = 5, 'Quartermaster'
+        LEVEL6 = 6, 'Boatswain'
         LEVEL7 = 7, 'First Mate'
         LEVEL8 = 8, 'Captain'
 
@@ -178,11 +178,11 @@ class Group(models.Model):
         verbose_name_plural = 'kelas'
 
     class Level(models.IntegerChoices):
-        LEVEL1 = 1, 'Sloop'
-        LEVEL2 = 2, 'Brigantine'
-        LEVEL3 = 3, 'Galleon'
-        LEVEL4 = 4, "Man o' War"
-        LEVEL5 = 5, 'Ship of the Line'
+        LEVEL1 = 1, 'Galley'
+        LEVEL2 = 2, 'Sloop'
+        LEVEL3 = 3, 'Brigantine'
+        LEVEL4 = 4, 'Galleon'
+        LEVEL5 = 5, "Man o' War"
 
     MILESTONES = [0, 150, 500, 1000, 1500, 2000]
 
@@ -306,8 +306,8 @@ class ClassYear(models.Model):
         verbose_name_plural = 'angkatan'
 
     class Level(models.IntegerChoices):
-        LEVEL1 = 1, 'Flotilla'
-        LEVEL2 = 2, 'Cavalcade'
+        LEVEL1 = 1, 'Squadron'
+        LEVEL2 = 2, 'Flotilla'
         LEVEL3 = 3, 'Fleet'
         LEVEL4 = 4, 'Armada'
 

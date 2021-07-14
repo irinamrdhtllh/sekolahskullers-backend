@@ -17,6 +17,7 @@ class RegisterView(TokenViewBase):
 
         try:
             serializer.is_valid(raise_exception=True)
+            serializer.save()
         except TokenError as e:
             raise InvalidToken(e.args[0])
 

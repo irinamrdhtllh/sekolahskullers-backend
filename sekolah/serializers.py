@@ -30,7 +30,7 @@ class StudentTaskStatusSerializer(serializers.ModelSerializer):
 
 class AssessmentField(serializers.Field):
     def to_representation(self, value):
-        return {
+        pairs = {
             'kepemimpinan': value.assessment1,
             'keteknikfisikaan': value.assessment2,
             'kemahasiswaan': value.assessment3,
@@ -39,6 +39,7 @@ class AssessmentField(serializers.Field):
             'semangat_menjelajah': value.assessment6,
             'semangat_memaknai': value.assessment7,
         }
+        return [{'key': key, 'value': val} for key, val in pairs.items()]
 
 
 class StudentSerializer(serializers.ModelSerializer):

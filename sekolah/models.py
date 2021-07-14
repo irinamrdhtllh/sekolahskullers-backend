@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class Task(models.Model):
@@ -349,6 +350,11 @@ class ClassYear(models.Model):
             return False
 
     def save(self, *args, **kwargs):
+        # Allow only one instance of a model
+        # https://stackoverflow.com/questions/39412968/allow-only-one-instance-of-a-model-in-django
+        if not self.pk and ClassYear.objects.exists():
+            raise ValidationError('There can only be one instance of ClassYear')
+
         self.update_level()
         super().save(*args, **kwargs)
 

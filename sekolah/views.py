@@ -41,7 +41,7 @@ class ClassYearView(generics.RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_object(self):
-        return models.ClassYear.objects.get(pk=1)
+        return models.ClassYear.objects.first()
 
 
 class ProfileView(generics.RetrieveAPIView):

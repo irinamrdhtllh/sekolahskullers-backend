@@ -4,15 +4,15 @@ from . import views
 
 urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
-    path('token/', views.LoginView.as_view(), name='login'),
-    path('token/refresh/', views.RefreshTokenView.as_view(), name='refresh'),
+    path('login/', views.LoginView.as_view(), name='login'),
+    path('refresh/', views.RefreshTokenView.as_view(), name='refresh'),
     path(
-        'password/reset/',
+        'password_reset/',
         views.PasswordResetView.as_view(),
         name='password_reset',
     ),
     path(
-        'password/reset/confirm/<uidb64>/<token>/',
+        'password_reset/confirm/<uidb64>/<token>/',
         views.PasswordResetConfirmView.as_view(),
         name='password_reset_confirm',
     ),

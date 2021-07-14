@@ -1,36 +1,41 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
 
 from rest_framework_simplejwt.views import TokenViewBase
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 from . import serializers
 
 
 class RegisterView(TokenViewBase):
-    serializer_class = serializers.LoginSerializer
+    serializer_class = serializers.RegisterSerializer
+    permission_classes = [permissions.AllowAny]
 
-    def post(self, request, format=None):
-        register_serializer = serializers.RegisterSerializer(data=request.data)
-        register_serializer.is_valid(raise_exception=True)
-        register_serializer.save()
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
 
-        return super().post(request, format=format)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
 
 class LoginView(TokenViewBase):
     serializer_class = serializers.LoginSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class RefreshTokenView(TokenViewBase):
     serializer_class = serializers.RefreshTokenSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class PasswordResetView(GenericAPIView):
     serializer_class = serializers.PasswordResetSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -39,14 +44,13 @@ class PasswordResetView(GenericAPIView):
         return Response(
             {
                 'detail': 'Password reset email has been sent',
-            },
-            status=status.HTTP_200_OK,
+            }
         )
 
 
 class PasswordResetConfirmView(GenericAPIView):
     serializer_class = serializers.PasswordResetConfirmSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

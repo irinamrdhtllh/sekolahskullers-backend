@@ -16,10 +16,6 @@ def api_root(request, format=None):
             'class-year': reverse('class_year', request=request, format=format),
             'profile': reverse('profile', request=request, format=format),
             'group_profile': reverse('group_profile', request=request, format=format),
-            'register': reverse('register', request=request, format=format),
-            'login': reverse('login', request=request, format=format),
-            'refresh': reverse('refresh', request=request, format=format),
-            'logout': reverse('logout', request=request, format=format),
         }
     )
 

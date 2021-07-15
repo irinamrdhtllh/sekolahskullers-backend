@@ -50,9 +50,19 @@ Berikut daftar endpoint REST API yang dapat diakses dengan mengirim request ke r
 
 Autentikasi menggunakan JWT dengan endpoint berikut.
 
-- `POST /api/token/register/` : Register peserta baru
-- `POST /api/token/` : Login peserta
-- `POST /api/token/refresh/` : Memperoleh token akses baru
-- `POST /api/token/logout/` : Logout peserta
+- `POST /auth/register/` : Register peserta baru
+- `POST /auth/login/` : Login peserta
+- `POST /auth/refresh/` : Memperoleh token akses baru
+- `POST /auth/password-reset/` : Reset password dengan mengirim link ke email
+- `POST /auth/password-reset/<uidb64>/<token>` : Reset password melalui autentikasi dari `uidb64` dan `token` (link diperoleh dari email)
 
 Endpoint retrieve memerlukan token di header request. Token dapat diperoleh pada saat register/login
+
+## Management command
+
+_Management command_ dapat dijalankan melalui terminal dengan perintah berikut
+
+    (.venv) > python manage.py <nama-command>
+
+- `clear_recent_actions` : Menghapus seluruh history aksi (operasi CRUD, dsb) pada model di halaman admin
+- `reset_weekly_exp` : Mereset nilai exp mingguan pada peserta dan kelas (untuk leaderboard).

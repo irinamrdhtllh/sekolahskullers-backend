@@ -9,7 +9,7 @@ class LevelField(serializers.ChoiceField):
 
 
 class StudentTaskStatusSerializer(serializers.ModelSerializer):
-    task = serializers.StringRelatedField()
+    name = serializers.CharField(source='task.name')
     is_required = serializers.BooleanField(source='task.is_required')
     deadline = serializers.DateTimeField(source='task.deadline')
     max_score = serializers.IntegerField(source='task.max_score')
@@ -18,7 +18,7 @@ class StudentTaskStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.StudentTaskStatus
         fields = [
-            'task',
+            'name',
             'is_complete',
             'score',
             'is_required',
@@ -73,7 +73,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class GroupTaskStatusSerializer(serializers.ModelSerializer):
-    task = serializers.StringRelatedField()
+    name = serializers.CharField(source='task.name')
     is_required = serializers.BooleanField(source='task.is_required')
     deadline = serializers.DateTimeField(source='task.deadline')
     max_score = serializers.IntegerField(source='task.max_score')
@@ -82,7 +82,7 @@ class GroupTaskStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.GroupTaskStatus
         fields = [
-            'task',
+            'name',
             'is_complete',
             'score',
             'is_required',

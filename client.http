@@ -1,5 +1,7 @@
+### AUTH
+
 ### Register
-POST http://127.0.0.1:8000/api/register/
+POST http://127.0.0.1:8000/auth/register/
 Content-Type: application/json
 
 {
@@ -11,8 +13,9 @@ Content-Type: application/json
     "password2": "13319090"
 }
 
-### Login and generate new pair of token
-POST http://127.0.0.1:8000/api/token/
+
+### Login
+POST http://127.0.0.1:8000/auth/login/
 Content-Type: application/json
 
 {
@@ -21,14 +24,16 @@ Content-Type: application/json
 }
 
 
-### Use refresh token from cookie to obtain new access token
-POST http://127.0.0.1:8000/api/token/refresh/
+### Refresh
+POST http://127.0.0.1:8000/auth/refresh/
 Content-Type: application/json
 
+{
+    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyODkzMTk2OSwianRpIjoiNjcyMjdiZWUxMzQ0NDJkZWEwZDY4OTk3YWY5ZjM1ZmYiLCJ1c2VyX2lkIjoxNjcsInVzZXJuYW1lIjoiMTMzMTkwOTAifQ.jpPQq6o2NWU-lQQLGkUNBr9AYxPnf_Gn7J26OVz7-tM"
+}
 
-### Logout
-POST http://127.0.0.1:8000/api/token/logout/
-Content-Type: application/json
+
+### API
 
 ### List students
 GET http://127.0.0.1:8000/api/students/
@@ -48,6 +53,5 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 
 
 ### Retrieve group
-GET http://127.0.0.1:8000/api/profile/group/
+GET http://127.0.0.1:8000/api/profile-group/
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MzgwMzQxLCJqdGkiOiIwZDE2NzI3MTdmY2E0ZjQ3OGVkZWVjMTMxNjQzYmU2NiIsInVzZXJfaWQiOjExLCJ1c2VybmFtZSI6IjEzMzE5MDkwIn0.fa5uWkYAGi_qgmXO1AobOVodifCqSxOEU0XXvx4W778
-

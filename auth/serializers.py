@@ -42,16 +42,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if password1 and password2 and password1 != password2:
             raise serializers.ValidationError({'password': "Password doesn't match"})
-        
+
         return super().validate(data)
 
     def create(self, validated_data):
         user = User(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
-
         models.Student.objects.create(user=user)
-        
+
         return user
 
 
@@ -61,7 +60,8 @@ class LoginSerializer(jwt_serializers.TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Custom claims
-        token['username'] = user.get_username()
+        if user.student.group:
+            token['group'] = user.student.group.name
 
         return token
 
@@ -96,7 +96,9 @@ class PasswordResetSerializer(serializers.Serializer):
         try:
             User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError('Email address is not associated with a user')
+            raise serializers.ValidationError(
+                'Email address is not associated with a user'
+            )
 
         self.reset_form = PasswordResetForm(data=self.initial_data)
         if not self.reset_form.is_valid():
@@ -117,8 +119,12 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
-    new_password1 = serializers.CharField(max_length=128, style={'input_type': 'password'})
-    new_password2 = serializers.CharField(max_length=128, style={'input_type': 'password'})
+    new_password1 = serializers.CharField(
+        max_length=128, style={'input_type': 'password'}
+    )
+    new_password2 = serializers.CharField(
+        max_length=128, style={'input_type': 'password'}
+    )
 
     user = None
     set_password_form = None

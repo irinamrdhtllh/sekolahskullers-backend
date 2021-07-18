@@ -9,15 +9,19 @@ from . import serializers
 
 
 class RegisterView(TokenViewBase):
-    serializer_class = serializers.RegisterSerializer
+    serializer_class = serializers.LoginSerializer
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
+        register_serializer = serializers.RegisterSerializer(data=request.data)
+        register_serializer.is_valid(raise_exception=True)
+        user = register_serializer.save()
+
+        request.user = user
         serializer = self.get_serializer(data=request.data)
 
         try:
             serializer.is_valid(raise_exception=True)
-            serializer.save()
         except TokenError as e:
             raise InvalidToken(e.args[0])
 

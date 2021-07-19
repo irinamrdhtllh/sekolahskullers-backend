@@ -57,7 +57,7 @@ class Student(models.Model):
     level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
     gold = models.IntegerField(default=0)
     potion = models.IntegerField(default=0)
-    has_mystery_box = models.BooleanField(default=False)
+    last_mystery_box_purchase = models.DateField(blank=True, null=True)
     group = models.ForeignKey(
         'Group',
         related_name='students',

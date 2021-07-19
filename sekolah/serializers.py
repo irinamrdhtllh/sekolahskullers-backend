@@ -1,3 +1,4 @@
+from datetime import date
 from rest_framework import serializers
 
 from . import models
@@ -184,10 +185,19 @@ class ShopSerializer(serializers.Serializer):
         # Buy mystery box
         if mystery_box_type:
 
-            if instance.has_mystery_box:
-                raise serializers.ValidationError(
-                    {'mystery_box_type': ['Student still has mystery box.']}
-                )
+            if instance.last_mystery_box_purchase:
+                elapsed = date.today() - instance.last_mystery_box_purchase
+                if elapsed.days < 7:
+                    raise serializers.ValidationError(
+                        {
+                            'mystery_box_type': [
+                                'Wait {} more day{} to be able to buy another mystery box.'.format(
+                                    7 - elapsed.days,
+                                    '' if 7 - elapsed.days == 1 else 's',
+                                )
+                            ]
+                        }
+                    )
 
             mystery_box_price = MYSTERY_BOX['price'].get(mystery_box_type)
             if instance.gold < mystery_box_price:
@@ -202,7 +212,7 @@ class ShopSerializer(serializers.Serializer):
             instance.gold -= mystery_box_price
 
             # NOTE: Change has_mystery_box to False through management command
-            instance.has_mystery_box = True
+            instance.last_mystery_box_purchase = date.today()
 
         instance.save()
         return instance

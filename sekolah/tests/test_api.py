@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django.contrib.auth.models import User
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -51,6 +53,9 @@ class PrivateAPITests(APITestCase):
             HTTP_AUTHORIZATION='Bearer ' + str(refresh.access_token)
         )
 
+    def get_new_student(self):
+        return User.objects.get(username='Me').student
+
     def test_profile(self):
         response = self.client.get('/api/profile/')
 
@@ -69,28 +74,24 @@ class PrivateAPITests(APITestCase):
 
         response = self.client.post('/api/shop/', {'potion': 1}, format='json')
 
-        new_student = User.objects.get(username='Me').student
-
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            new_student.gold,
+            self.get_new_student().gold,
             self.student.gold - POTION['price'],
         )
-        self.assertEqual(new_student.potion, self.student.potion + 1)
+        self.assertEqual(self.get_new_student().potion, self.student.potion + 1)
 
     def test_buy_potion_failed(self):
         response = self.client.post('/api/shop/', {'potion': 1}, format='json')
 
-        new_student = User.objects.get(username='Me').student
-
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            new_student.gold,
+            self.get_new_student().gold,
             self.student.gold,
         )
-        self.assertEqual(new_student.potion, self.student.potion)
+        self.assertEqual(self.get_new_student().potion, self.student.potion)
 
-    def test_buy_mystery_box_success(self):
+    def test_buy_mystery_box_success_first_time(self):
         self.student.gold = 100
         self.student.save()
 
@@ -98,45 +99,62 @@ class PrivateAPITests(APITestCase):
             '/api/shop/', {'mystery_box_type': 'md'}, format='json'
         )
 
-        new_student = User.objects.get(username='Me').student
-
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            new_student.gold,
+            self.get_new_student().gold,
             self.student.gold - MYSTERY_BOX['price'].get('md'),
         )
         self.assertEqual(
-            new_student.has_mystery_box,
-            not self.student.has_mystery_box,
+            self.get_new_student().last_mystery_box_purchase,
+            date.today(),
         )
 
-    def test_buy_mystery_box_failed_has_mystery_box(self):
-        self.student.has_mystery_box = True
+    def test_buy_mystery_box_success_date(self):
+        self.student.gold = 100
+        self.student.last_mystery_box_purchase = date.today() - timedelta(days=8)
+        self.student.save()
+
+        response = self.client.post(
+            '/api/shop/', {'mystery_box_type': 'md'}, format='json'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            self.get_new_student().gold,
+            self.student.gold - MYSTERY_BOX['price'].get('md'),
+        )
+        self.assertEqual(
+            self.get_new_student().last_mystery_box_purchase,
+            date.today(),
+        )
+
+    def test_buy_mystery_box_failed_date(self):
+        self.student.gold = 100
+        self.student.last_mystery_box_purchase = date.today() - timedelta(days=1)
         self.student.save()
 
         response = self.client.post(
             '/api/shop/', {'mystery_box_type': 'sm'}, format='json'
         )
 
-        new_student = User.objects.get(username='Me').student
-
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(new_student.gold, self.student.gold)
+        self.assertEqual(self.get_new_student().gold, self.student.gold)
         self.assertEqual(
-            new_student.has_mystery_box,
-            self.student.has_mystery_box,
+            self.get_new_student().last_mystery_box_purchase,
+            self.student.last_mystery_box_purchase,
         )
 
     def test_buy_mystery_box_failed_insufficient_gold(self):
+        self.student.last_mystery_box_purchase = date.today() - timedelta(days=8)
+        self.student.save()
+
         response = self.client.post(
             '/api/shop/', {'mystery_box_type': 'sm'}, format='json'
         )
 
-        new_student = User.objects.get(username='Me').student
-
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(new_student.gold, self.student.gold)
+        self.assertEqual(self.get_new_student().gold, self.student.gold)
         self.assertEqual(
-            new_student.has_mystery_box,
-            self.student.has_mystery_box,
+            self.get_new_student().last_mystery_box_purchase,
+            self.student.last_mystery_box_purchase,
         )

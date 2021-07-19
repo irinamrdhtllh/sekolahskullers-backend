@@ -1,6 +1,8 @@
+from datetime import date
 from rest_framework import serializers
 
 from . import models
+from .items import POTION, MYSTERY_BOX
 
 
 class LevelField(serializers.ChoiceField):
@@ -63,6 +65,8 @@ class StudentSerializer(serializers.ModelSerializer):
             'relative_exp',
             'weekly_exp',
             'level',
+            'gold',
+            'potion',
             'assessment',
             'task_statuses',
             'group',
@@ -155,3 +159,60 @@ class ClassYearSerializer(serializers.ModelSerializer):
 
     def get_relative_exp(self, class_year):
         return class_year.relative_exp()
+
+
+class ShopSerializer(serializers.Serializer):
+    potion = serializers.IntegerField(min_value=1, required=False)
+    mystery_box_type = serializers.ChoiceField(
+        choices=list(MYSTERY_BOX['price'].keys()), required=False
+    )
+
+    def update(self, instance, validated_data):
+        potion = validated_data.get('potion')
+        mystery_box_type = validated_data.get('mystery_box_type')
+
+        # Buy potion
+        if potion:
+
+            if instance.gold < POTION['price']:
+                raise serializers.ValidationError(
+                    {'potion': ['Insufficient gold to buy potion.']}
+                )
+
+            instance.gold -= POTION['price']
+            instance.potion += potion
+
+        # Buy mystery box
+        if mystery_box_type:
+
+            if instance.last_mystery_box_purchase:
+                elapsed = date.today() - instance.last_mystery_box_purchase
+                if elapsed.days < 7:
+                    raise serializers.ValidationError(
+                        {
+                            'mystery_box_type': [
+                                'Wait {} more day{} to be able to buy another mystery box.'.format(
+                                    7 - elapsed.days,
+                                    '' if 7 - elapsed.days == 1 else 's',
+                                )
+                            ]
+                        }
+                    )
+
+            mystery_box_price = MYSTERY_BOX['price'].get(mystery_box_type)
+            if instance.gold < mystery_box_price:
+                raise serializers.ValidationError(
+                    {
+                        'mystery_box_type': [
+                            'Insufficient gold to buy selected mystery box.'
+                        ]
+                    }
+                )
+
+            instance.gold -= mystery_box_price
+
+            # NOTE: Change has_mystery_box to False through management command
+            instance.last_mystery_box_purchase = date.today()
+
+        instance.save()
+        return instance

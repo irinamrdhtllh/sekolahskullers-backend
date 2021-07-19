@@ -55,6 +55,9 @@ class Student(models.Model):
     exp = models.IntegerField(verbose_name='experience', default=0)
     weekly_exp = models.IntegerField(verbose_name='weekly experience', default=0)
     level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
+    gold = models.IntegerField(default=0)
+    potion = models.IntegerField(default=0)
+    last_mystery_box_purchase = models.DateField(blank=True, null=True)
     group = models.ForeignKey(
         'Group',
         related_name='students',

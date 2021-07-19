@@ -16,4 +16,5 @@ urlpatterns += [
     path('api/class-year/', views.ClassYearView.as_view(), name='class_year'),
     path('api/profile/', views.ProfileView.as_view(), name='profile'),
     path('api/profile-group/', views.GroupProfileView.as_view(), name='group_profile'),
+    path('api/shop/', views.ShopView.as_view(), name='shop'),
 ]

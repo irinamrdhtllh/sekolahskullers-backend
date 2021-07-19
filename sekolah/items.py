@@ -1,5 +1,5 @@
 POTION = {
-    'price': 10,
+    'price': 20,
 }
 
 MYSTERY_BOX = {

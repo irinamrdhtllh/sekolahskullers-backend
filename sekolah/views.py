@@ -16,6 +16,7 @@ def api_root(request, format=None):
             'class-year': reverse('class_year', request=request, format=format),
             'profile': reverse('profile', request=request, format=format),
             'group_profile': reverse('group_profile', request=request, format=format),
+            'shop': reverse('shop', request=request, format=format),
         }
     )
 
@@ -54,3 +55,15 @@ class GroupProfileView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user.student.group
+
+
+class ShopView(generics.GenericAPIView):
+    serializer_class = serializers.ShopSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        student = request.user.student
+        serializer = self.get_serializer(student, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'detail': 'Operation completed successfully'})

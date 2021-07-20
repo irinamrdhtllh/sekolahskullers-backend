@@ -1,8 +1,8 @@
-from rest_framework import permissions, generics
+from rest_framework import generics, permissions
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-
 
 from . import models, serializers
 
@@ -54,16 +54,25 @@ class GroupProfileView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return self.request.user.student.group
+        group = self.request.user.student.group
+
+        if group:
+            return group
+
+        raise ValidationError({'group': ['No group available.']})
 
 
 class ShopView(generics.GenericAPIView):
     serializer_class = serializers.ShopSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, format=None):
-        student = request.user.student
-        serializer = self.get_serializer(student, data=request.data)
+    def get_object(self):
+        return self.request.user.student
+
+    def patch(self, request, format=None):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({'detail': 'Operation completed successfully'})
+
+        return Response({'detail': 'Operation completed successfully.'})

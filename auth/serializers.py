@@ -1,14 +1,13 @@
+from rest_framework import serializers
+from rest_framework_simplejwt import serializers as jwt_serializers
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode as uid_decoder
-
-from rest_framework import serializers
-
-from rest_framework_simplejwt import serializers as jwt_serializers
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from sekolah import models
 
@@ -18,14 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
-            'first_name',
-            'last_name',
-            'username',
-            'email',
-            'password',
-            'password2',
-        ]
+        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'password2']
         write_only_fields = ['password', 'password2']
 
     def validate_email(self, email):
@@ -96,9 +88,7 @@ class PasswordResetSerializer(serializers.Serializer):
         try:
             User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError(
-                'Email address is not associated with a user'
-            )
+            raise serializers.ValidationError('Email address is not associated with a user')
 
         self.reset_form = PasswordResetForm(data=self.initial_data)
         if not self.reset_form.is_valid():
@@ -119,12 +109,8 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
-    new_password1 = serializers.CharField(
-        max_length=128, style={'input_type': 'password'}
-    )
-    new_password2 = serializers.CharField(
-        max_length=128, style={'input_type': 'password'}
-    )
+    new_password1 = serializers.CharField(max_length=128, style={'input_type': 'password'})
+    new_password2 = serializers.CharField(max_length=128, style={'input_type': 'password'})
 
     user = None
     set_password_form = None

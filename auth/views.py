@@ -1,9 +1,8 @@
-from rest_framework import status, permissions
-from rest_framework.response import Response
+from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
-
+from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenViewBase
-from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 from . import serializers
 

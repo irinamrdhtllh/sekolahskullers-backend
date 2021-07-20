@@ -1,8 +1,9 @@
 from datetime import date
+
 from rest_framework import serializers
 
 from . import models
-from .items import POTION, MYSTERY_BOX
+from .items import MYSTERY_BOX, POTION
 
 
 class LevelField(serializers.ChoiceField):
@@ -19,15 +20,7 @@ class StudentTaskStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.StudentTaskStatus
-        fields = [
-            'name',
-            'is_complete',
-            'score',
-            'is_required',
-            'deadline',
-            'max_score',
-            'link',
-        ]
+        fields = ['name', 'is_complete', 'score', 'is_required', 'deadline', 'max_score', 'link']
 
 
 class AssessmentField(serializers.Field):
@@ -85,15 +78,7 @@ class GroupTaskStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.GroupTaskStatus
-        fields = [
-            'name',
-            'is_complete',
-            'score',
-            'is_required',
-            'deadline',
-            'max_score',
-            'link',
-        ]
+        fields = ['name', 'is_complete', 'score', 'is_required', 'deadline', 'max_score', 'link']
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -104,16 +89,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Group
-        fields = [
-            'name',
-            'health',
-            'exp',
-            'relative_exp',
-            'weekly_exp',
-            'level',
-            'task_statuses',
-            'students',
-        ]
+        fields = ['name', 'health', 'exp', 'relative_exp', 'weekly_exp', 'level', 'task_statuses', 'students']
 
     def get_relative_exp(self, group):
         return group.relative_exp()
@@ -122,15 +98,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class ClassYearTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ClassYearTask
-        fields = [
-            'name',
-            'is_complete',
-            'score',
-            'is_required',
-            'deadline',
-            'max_score',
-            'link',
-        ]
+        fields = ['name', 'is_complete', 'score', 'is_required', 'deadline', 'max_score', 'link']
 
 
 class MissionField(serializers.RelatedField):
@@ -146,16 +114,7 @@ class ClassYearSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.ClassYear
-        fields = [
-            'name',
-            'health',
-            'exp',
-            'relative_exp',
-            'level',
-            'vision',
-            'missions',
-            'tasks',
-        ]
+        fields = ['name', 'health', 'exp', 'relative_exp', 'level', 'vision', 'missions', 'tasks']
 
     def get_relative_exp(self, class_year):
         return class_year.relative_exp()
@@ -163,9 +122,7 @@ class ClassYearSerializer(serializers.ModelSerializer):
 
 class ShopSerializer(serializers.Serializer):
     potion = serializers.IntegerField(min_value=1, required=False)
-    mystery_box_type = serializers.ChoiceField(
-        choices=list(MYSTERY_BOX['price'].keys()), required=False
-    )
+    mystery_box_type = serializers.ChoiceField(choices=list(MYSTERY_BOX['price'].keys()), required=False)
 
     def update(self, instance, validated_data):
         potion = validated_data.get('potion')
@@ -175,9 +132,7 @@ class ShopSerializer(serializers.Serializer):
         if potion:
 
             if instance.gold < POTION['price']:
-                raise serializers.ValidationError(
-                    {'potion': ['Insufficient gold to buy potion.']}
-                )
+                raise serializers.ValidationError({'potion': ['Insufficient gold to buy potion.']})
 
             instance.gold -= POTION['price']
             instance.potion += potion
@@ -202,16 +157,10 @@ class ShopSerializer(serializers.Serializer):
             mystery_box_price = MYSTERY_BOX['price'].get(mystery_box_type)
             if instance.gold < mystery_box_price:
                 raise serializers.ValidationError(
-                    {
-                        'mystery_box_type': [
-                            'Insufficient gold to buy selected mystery box.'
-                        ]
-                    }
+                    {'mystery_box_type': ['Insufficient gold to buy selected mystery box.']}
                 )
 
             instance.gold -= mystery_box_price
-
-            # NOTE: Change has_mystery_box to False through management command
             instance.last_mystery_box_purchase = date.today()
 
         instance.save()

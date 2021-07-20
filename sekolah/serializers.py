@@ -121,8 +121,8 @@ class ClassYearSerializer(serializers.ModelSerializer):
 
 
 class ShopSerializer(serializers.Serializer):
-    potion = serializers.IntegerField(min_value=1, required=False)
-    mystery_box_type = serializers.ChoiceField(choices=list(MYSTERY_BOX['price'].keys()), required=False)
+    potion = serializers.IntegerField(min_value=1)
+    mystery_box_type = serializers.ChoiceField(choices=list(MYSTERY_BOX['price'].keys()))
 
     def update(self, instance, validated_data):
         potion = validated_data.get('potion')

@@ -19,8 +19,8 @@ POST http://127.0.0.1:8000/auth/login/
 Content-Type: application/json
 
 {
-    "username": "13319090",
-    "password": "13319090"
+    "username": "13320001",
+    "password": "123"
 }
 
 
@@ -29,7 +29,7 @@ POST http://127.0.0.1:8000/auth/refresh/
 Content-Type: application/json
 
 {
-    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyODkzMTk2OSwianRpIjoiNjcyMjdiZWUxMzQ0NDJkZWEwZDY4OTk3YWY5ZjM1ZmYiLCJ1c2VyX2lkIjoxNjcsInVzZXJuYW1lIjoiMTMzMTkwOTAifQ.jpPQq6o2NWU-lQQLGkUNBr9AYxPnf_Gn7J26OVz7-tM"
+    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyOTMzOTMxMiwianRpIjoiYWRlY2EyOTVmYjE0NGUwNTk1MmVhNmRmZjgyNGMzN2QiLCJ1c2VybmFtZSI6IjEzMzIwMDAxIn0.__dbwwF57b4mgpT7GgxH4mLexdXMPZt6XbW2NcDk8do"
 }
 
 
@@ -49,9 +49,19 @@ GET http://127.0.0.1:8000/api/class-year/
 
 ### Retrieve student
 GET http://127.0.0.1:8000/api/profile
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MzgwMzQxLCJqdGkiOiIwZDE2NzI3MTdmY2E0ZjQ3OGVkZWVjMTMxNjQzYmU2NiIsInVzZXJfaWQiOjExLCJ1c2VybmFtZSI6IjEzMzE5MDkwIn0.fa5uWkYAGi_qgmXO1AobOVodifCqSxOEU0XXvx4W778
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI2NzQ3NTIyLCJqdGkiOiJhMDczZGFlNzliYmI0MWMxYmY5ZWViYjNiNDViNDkxOCIsInVzZXJuYW1lIjoiMTMzMjAwMDEifQ.JZU5daDE13biqmvqBMp9Y_aFX39g3GRAmZRvw2aX2bQ
 
 
 ### Retrieve group
 GET http://127.0.0.1:8000/api/profile-group/
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI1MzgwMzQxLCJqdGkiOiIwZDE2NzI3MTdmY2E0ZjQ3OGVkZWVjMTMxNjQzYmU2NiIsInVzZXJfaWQiOjExLCJ1c2VybmFtZSI6IjEzMzE5MDkwIn0.fa5uWkYAGi_qgmXO1AobOVodifCqSxOEU0XXvx4W778
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI2NzQ3NTIyLCJqdGkiOiJhMDczZGFlNzliYmI0MWMxYmY5ZWViYjNiNDViNDkxOCIsInVzZXJuYW1lIjoiMTMzMjAwMDEifQ.JZU5daDE13biqmvqBMp9Y_aFX39g3GRAmZRvw2aX2bQ
+
+
+### Shop
+POST http://127.0.0.1:8000/api/shop/
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI2NzQ3NTIyLCJqdGkiOiJhMDczZGFlNzliYmI0MWMxYmY5ZWViYjNiNDViNDkxOCIsInVzZXJuYW1lIjoiMTMzMjAwMDEifQ.JZU5daDE13biqmvqBMp9Y_aFX39g3GRAmZRvw2aX2bQ
+Content-Type: application/json
+
+{
+    "mystery_box_type": "sm"
+}

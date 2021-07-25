@@ -1,17 +1,17 @@
 from django.contrib.auth.models import User
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
 
 
 class Task(models.Model):
-    class Meta:
-        abstract = True
-
     name = models.CharField(max_length=50, unique=True)
     is_required = models.BooleanField()
     deadline = models.DateTimeField('deadline date')
     max_score = models.IntegerField(verbose_name='maximum score', default=100)
     link = models.CharField(max_length=100, unique=True, null=True)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.name
@@ -19,7 +19,6 @@ class Task(models.Model):
 
 class Assessment(models.Model):
     student = models.OneToOneField('Student', on_delete=models.CASCADE, null=True)
-
     assessment1 = models.IntegerField(verbose_name='kepemimpinan', default=0)
     assessment2 = models.IntegerField(verbose_name='keteknikfisikaan', default=0)
     assessment3 = models.IntegerField(verbose_name='kemahasiswaan', default=0)
@@ -33,11 +32,6 @@ class Assessment(models.Model):
 
 
 class Student(models.Model):
-    class Meta:
-        ordering = ['user__username']
-        verbose_name = 'peserta'
-        verbose_name_plural = 'peserta'
-
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Landlubber'
         LEVEL2 = 2, 'Powderboy'
@@ -58,16 +52,19 @@ class Student(models.Model):
     gold = models.IntegerField(default=0)
     potion = models.IntegerField(default=0)
     last_mystery_box_purchase = models.DateField(blank=True, null=True)
-    group = models.ForeignKey(
-        'Group',
-        related_name='students',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
+    group = models.ForeignKey('Group', related_name='students', on_delete=models.SET_NULL, blank=True, null=True)
+
+    class Meta:
+        ordering = ['user__username']
+        verbose_name = 'peserta'
+        verbose_name_plural = 'peserta'
 
     def __str__(self):
         return f'{self.user.get_username()} - {self.user.get_full_name()}'
+
+    def save(self, *args, **kwargs):
+        self.update_level()
+        super().save(*args, **kwargs)
 
     def update_level(self, level=None):
         """
@@ -106,10 +103,6 @@ class Student(models.Model):
         else:
             return False
 
-    def save(self, *args, **kwargs):
-        self.update_level()
-        super().save(*args, **kwargs)
-
     def complete_task(self, name, score):
         """
         Menyelesaikan Task bernama name dan memberi skor sebesar score.
@@ -125,21 +118,11 @@ class Student(models.Model):
 
 
 class StudentTask(Task):
+    students = models.ManyToManyField(Student, related_name='tasks', through='StudentTaskStatus')
+
     class Meta:
         verbose_name = 'tugas peserta'
         verbose_name_plural = 'tugas peserta'
-
-    students = models.ManyToManyField(
-        Student, related_name='tasks', through='StudentTaskStatus'
-    )
-
-    def assign(self, student):
-        """
-        Menambahkan Student ke Task yang diberikan.
-        """
-        self.save(commit=False)
-        self.students.add(student)
-        StudentTaskStatus.objects.get_or_create(student=student, task=self)
 
     def save(self, commit=True, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -151,20 +134,24 @@ class StudentTask(Task):
                 if not self.students.filter(user__username=student.user.get_username()):
                     self.assign(student)
 
+    def assign(self, student):
+        """
+        Menambahkan Student ke Task yang diberikan.
+        """
+        self.save(commit=False)
+        self.students.add(student)
+        StudentTaskStatus.objects.get_or_create(student=student, task=self)
+
 
 class StudentTaskStatus(models.Model):
+    student = models.ForeignKey(Student, related_name='task_statuses', on_delete=models.CASCADE)
+    task = models.ForeignKey(StudentTask, related_name='statuses', on_delete=models.CASCADE)
+    is_complete = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
+
     class Meta:
         verbose_name = 'status tugas peserta'
         verbose_name_plural = 'status tugas peserta'
-
-    student = models.ForeignKey(
-        Student, related_name='task_statuses', on_delete=models.CASCADE
-    )
-    task = models.ForeignKey(
-        StudentTask, related_name='statuses', on_delete=models.CASCADE
-    )
-    is_complete = models.BooleanField(default=False)
-    score = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.student.user.get_username()} - {self.task.name}'
@@ -176,11 +163,6 @@ class StudentTaskStatus(models.Model):
 
 
 class Group(models.Model):
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'kelas'
-        verbose_name_plural = 'kelas'
-
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Galley'
         LEVEL2 = 2, 'Sloop'
@@ -196,8 +178,17 @@ class Group(models.Model):
     weekly_exp = models.IntegerField(verbose_name='weekly experience', default=0)
     level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
 
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'kelas'
+        verbose_name_plural = 'kelas'
+
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.update_level()
+        super().save(*args, **kwargs)
 
     def update_level(self, level=None):
         if self.level == self.Level.values[-1]:
@@ -225,14 +216,7 @@ class Group(models.Model):
         else:
             return False
 
-    def save(self, *args, **kwargs):
-        self.update_level()
-        super().save(*args, **kwargs)
-
     def complete_task(self, name, score):
-        """
-        Menyelesaikan Task bernama name dan memberi skor sebesar score.
-        """
         task = self.tasks.get(name=name)
         status = GroupTaskStatus.objects.get(group=self, task=task)
         status.is_complete = True
@@ -244,21 +228,11 @@ class Group(models.Model):
 
 
 class GroupTask(Task):
+    groups = models.ManyToManyField(Group, related_name='tasks', through='GroupTaskStatus')
+
     class Meta:
         verbose_name = 'tugas kelas'
         verbose_name_plural = 'tugas kelas'
-
-    groups = models.ManyToManyField(
-        Group, related_name='tasks', through='GroupTaskStatus'
-    )
-
-    def assign(self, group):
-        """
-        Menambahkan Group ke Task yang diberikan.
-        """
-        self.save(commit=False)
-        self.groups.add(group)
-        GroupTaskStatus.objects.get_or_create(group=group, task=self)
 
     def save(self, commit=True, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -270,20 +244,24 @@ class GroupTask(Task):
                 if not self.groups.filter(name=group.name):
                     self.assign(group)
 
+    def assign(self, group):
+        """
+        Menambahkan Group ke Task yang diberikan.
+        """
+        self.save(commit=False)
+        self.groups.add(group)
+        GroupTaskStatus.objects.get_or_create(group=group, task=self)
+
 
 class GroupTaskStatus(models.Model):
+    group = models.ForeignKey(Group, related_name='task_statuses', on_delete=models.CASCADE)
+    task = models.ForeignKey(GroupTask, related_name='statuses', on_delete=models.CASCADE)
+    is_complete = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
+
     class Meta:
         verbose_name = 'status tugas kelas'
         verbose_name_plural = 'status tugas kelas'
-
-    group = models.ForeignKey(
-        Group, related_name='task_statuses', on_delete=models.CASCADE
-    )
-    task = models.ForeignKey(
-        GroupTask, related_name='statuses', on_delete=models.CASCADE
-    )
-    is_complete = models.BooleanField(default=False)
-    score = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.group.name} - {self.task.name}'
@@ -295,9 +273,7 @@ class GroupTaskStatus(models.Model):
 
 
 class Mission(models.Model):
-    class_year = models.ForeignKey(
-        'ClassYear', related_name='missions', on_delete=models.CASCADE
-    )
+    class_year = models.ForeignKey('ClassYear', related_name='missions', on_delete=models.CASCADE)
     text = models.TextField(default='')
 
     def __str__(self):
@@ -305,10 +281,6 @@ class Mission(models.Model):
 
 
 class ClassYear(models.Model):
-    class Meta:
-        verbose_name = 'angkatan'
-        verbose_name_plural = 'angkatan'
-
     class Level(models.IntegerChoices):
         LEVEL1 = 1, 'Squadron'
         LEVEL2 = 2, 'Flotilla'
@@ -323,8 +295,21 @@ class ClassYear(models.Model):
     level = models.IntegerField(choices=Level.choices, default=Level.LEVEL1)
     vision = models.TextField(default='')
 
+    class Meta:
+        verbose_name = 'angkatan'
+        verbose_name_plural = 'angkatan'
+
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # Allow only one instance of a model
+        # https://stackoverflow.com/questions/39412968/allow-only-one-instance-of-a-model-in-django
+        if not self.pk and ClassYear.objects.exists():
+            raise ValidationError('There can only be one instance of ClassYear')
+
+        self.update_level()
+        super().save(*args, **kwargs)
 
     def update_level(self, level=None):
         if self.level == self.Level.values[-1]:
@@ -352,19 +337,7 @@ class ClassYear(models.Model):
         else:
             return False
 
-    def save(self, *args, **kwargs):
-        # Allow only one instance of a model
-        # https://stackoverflow.com/questions/39412968/allow-only-one-instance-of-a-model-in-django
-        if not self.pk and ClassYear.objects.exists():
-            raise ValidationError('There can only be one instance of ClassYear')
-
-        self.update_level()
-        super().save(*args, **kwargs)
-
     def complete_task(self, name, score):
-        """
-        Menyelesaikan Task bernama name dan memberi skor sebesar score.
-        """
         task = self.tasks.get(name=name)
         task.is_complete = True
         task.score = score
@@ -374,15 +347,13 @@ class ClassYear(models.Model):
 
 
 class ClassYearTask(Task):
+    class_year = models.ForeignKey(ClassYear, related_name='tasks', on_delete=models.CASCADE)
+    is_complete = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
+
     class Meta:
         verbose_name = 'tugas angkatan'
         verbose_name_plural = 'tugas angkatan'
-
-    class_year = models.ForeignKey(
-        ClassYear, related_name='tasks', on_delete=models.CASCADE
-    )
-    is_complete = models.BooleanField(default=False)
-    score = models.IntegerField(default=0)
 
     def save(self, commit=True, *args, **kwargs):
         if not self.is_complete and self.score != 0:

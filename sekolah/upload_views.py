@@ -1,12 +1,13 @@
-import csv, io
+import csv
+import io
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
-from .models import Student, Group
+from .models import Group, Student
 
 
 @staff_member_required()

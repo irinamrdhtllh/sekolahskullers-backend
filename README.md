@@ -47,6 +47,7 @@ Berikut daftar endpoint REST API yang dapat diakses dengan mengirim request ke r
 - `GET /api/class-year/` : List angkatan
 - `GET /api/profile/` : Retrieve peserta saat ini (yang sedang login)
 - `GET /api/profile/group/` : Retrieve kelas saat ini
+- `GET /api/shop/` : Membeli item di toko
 
 Autentikasi menggunakan JWT dengan endpoint berikut.
 
@@ -56,7 +57,7 @@ Autentikasi menggunakan JWT dengan endpoint berikut.
 - `POST /auth/password-reset/` : Reset password dengan mengirim link ke email
 - `POST /auth/password-reset/<uidb64>/<token>` : Reset password melalui autentikasi dari `uidb64` dan `token` (link diperoleh dari email)
 
-Endpoint retrieve memerlukan token di header request. Token dapat diperoleh pada saat register/login
+Endpoint retrieve dan toko memerlukan token di header request. Token dapat diperoleh pada saat register/login
 
 ## Management command
 

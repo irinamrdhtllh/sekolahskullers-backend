@@ -54,4 +54,20 @@ def upload(request, action=''):
             user = get_object_or_404(User, username=column[0])
             user.student.complete_task(column[1], column[2])
 
+        elif action == 'health':
+            user = get_object_or_404(User, username=column[0])
+            user.student.health = column[1]
+            user.student.save()
+
+        elif action == 'assessment':
+            user = get_object_or_404(User, username=column[0])
+            user.student.assessment.assessment1 = column[1]
+            user.student.assessment.assessment2 = column[2]
+            user.student.assessment.assessment3 = column[3]
+            user.student.assessment.assessment4 = column[4]
+            user.student.assessment.assessment5 = column[5]
+            user.student.assessment.assessment6 = column[6]
+            user.student.assessment.assessment7 = column[7]
+            user.student.assessment.save()
+
     return HttpResponseRedirect(reverse('upload'))

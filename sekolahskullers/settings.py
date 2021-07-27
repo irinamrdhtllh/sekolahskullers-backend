@@ -82,11 +82,7 @@ WSGI_APPLICATION = 'sekolahskullers.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'production.sqlite3',
-    },
-    'alternative': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'test.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     },
 }
 

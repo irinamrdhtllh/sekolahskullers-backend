@@ -37,12 +37,12 @@ class Student(models.Model):
         LEVEL2 = 2, 'Powderboy'
         LEVEL3 = 3, 'Guncrew'
         LEVEL4 = 4, 'Master Gunner'
-        LEVEL5 = 5, 'Quartermaster'
-        LEVEL6 = 6, 'Boatswain'
+        LEVEL5 = 5, 'Boatswain'
+        LEVEL6 = 6, 'Quartermaster'
         LEVEL7 = 7, 'First Mate'
         LEVEL8 = 8, 'Captain'
 
-    MILESTONES = [0, 700, 1600, 2500, 3600, 4700, 5800, 6900]
+    MILESTONES = [0, 650, 1400, 2150, 3150, 4200, 5700, 15000, 20000]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     health = models.IntegerField(default=100)
@@ -170,7 +170,7 @@ class Group(models.Model):
         LEVEL4 = 4, 'Galleon'
         LEVEL5 = 5, "Man o' War"
 
-    MILESTONES = [0, 150, 500, 1000, 1500, 2000]
+    MILESTONES = [0, 250, 450, 800, 1300, 10000]
 
     name = models.CharField(max_length=25)
     health = models.IntegerField(default=100)
@@ -287,7 +287,7 @@ class ClassYear(models.Model):
         LEVEL3 = 3, 'Fleet'
         LEVEL4 = 4, 'Armada'
 
-    MILESTONES = [0, 1000, 2000, 3000, 4000]
+    MILESTONES = [0, 400, 900, 1500, 4000]
 
     name = models.CharField(max_length=25)
     health = models.IntegerField(default=100)
